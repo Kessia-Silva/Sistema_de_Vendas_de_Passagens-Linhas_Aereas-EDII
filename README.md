@@ -1,0 +1,2 @@
+# Sistema_de_Vendas_de_Passagens-Linhas_Aéreas-EDII
+O presente projeto tem como objetivo o desenvolvimento de um sistema web  para a companhia fictícia Linhas Aéreas ED-II, voltado à comercialização de  voos econômicos nacionais e internacionais. A plataforma será implementada  em Python com o framework Flask, buscando conciliar facilidade de uso,  segurança de dados e eficiência no gerenciamento de voos e clientes.
