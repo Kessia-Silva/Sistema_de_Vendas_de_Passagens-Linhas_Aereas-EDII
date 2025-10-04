@@ -52,10 +52,29 @@ body{
     border-radius: 6px;
     font-size: 16px;
     cursor: pointer;
-    transition: background 0.3s;
+   
     margin-top: 25px;
 }
 
 button{
     margin-left: 5px;
+}
+
+
+.alert {
+    background-color: #f44336; /* vermelho de erro */
+    color: white;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 8px;
+    position: relative;
+    font-family: Arial, sans-serif;
+}
+
+.alert .fechar {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    cursor: pointer;
+    font-weight: bold;
 }

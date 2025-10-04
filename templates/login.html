@@ -7,15 +7,15 @@
     <body>
         <div class = "login-container">
             <h1 class = "login-text">Login</h1>
-            <form class = "formulario">
+            <form class = "formulario" method="post" action="/login">
 
                 <label>Email</label>
-                <input type = "text" id = "email", name = "email" placeholder="Digite seu email" required>
+                <input type = "email" id = "email", name = "email" placeholder="Digite seu email" required>
 
                 <label>Senha</label>
                 <input type = "password", id = "senha", name = "senha", placeholder="Digite sua senha" required>
 
-                <button>Entrar</button>
+                <button type = "submit">Entrar</button>
 
             </form>
         </div>
