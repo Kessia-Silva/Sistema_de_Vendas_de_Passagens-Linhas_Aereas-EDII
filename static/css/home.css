@@ -1,0 +1,64 @@
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Navbar */
+.navbar {
+    display: flex; /* Transforma a navbar em flex container, permitindo alinhar elementos horizontalmente. */
+    justify-content: space-between; 
+    align-items: center;
+    background: #003366;
+    padding: 10px 40px;
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+/* Container logo + texto */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* espaço entre logo e texto */
+}
+
+.logo-container img {
+    height: 55px;
+    width: auto;
+}
+
+.logo-text {
+    font-size: 20px;
+    margin: 0;
+}
+
+/* Botão circular de login */
+.circle-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    text-decoration: none;
+    font-size: 20px;
+    transition: background-color 0.3s, transform 0.2s;
+    margin-right: 50px;
+    
+}
+
+.circle-btn:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.1);
+}
+
+/* Ícone dentro do botão */
+.circle-btn i {
+    pointer-events: none;
+}
