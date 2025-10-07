@@ -59,8 +59,10 @@ body{
 button{
     margin-left: 5px;
 }
-
-
+.mensageErro{
+    color:#f44336;
+   
+}
 .alert {
     background-color: #f44336; /* vermelho de erro */
     color: white;

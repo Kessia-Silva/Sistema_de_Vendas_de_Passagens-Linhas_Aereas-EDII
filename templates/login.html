@@ -17,6 +17,10 @@
 
                 <button type = "submit">Entrar</button>
 
+                {% if mensagem %}
+                 <p class = "mensageErro">{{ mensagem }}</p>
+             {% endif %}
+
             </form>
         </div>
     </body>
