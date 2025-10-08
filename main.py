@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for #importando a classe Flask do pacote Flask
 from arquivos.usuarios import usuarios # chamando o arquivo de usuarios
+from arquivos.voos import voos # chamando o arquivo de usuarios
+
 app = Flask(__name__)  # cria a aplicação
 
 # Definindo Rotas
@@ -9,7 +11,7 @@ def home():
 
 @app.route("/reservar_voo")   
 def reserva():
-    return render_template("reservar_voo.html")
+    return render_template("reservar_voo.html", voos_agendados = voos)
 
 @app.route("/login", methods = ["GET", "POST"])
 def login():

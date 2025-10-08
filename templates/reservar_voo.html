@@ -19,8 +19,23 @@
                     <i class="fas fa-user"></i>
                 </a>  
         </header>
+        <div class = "text"> 
+            <h1> Reservas do Voo </h1>
+         {% if voos_agendados %}
+          {% for voos_agendados in voos_agendados %}
+            <li>
+             Destino: {{ voos_agendados.Destino }} | Data: {{ voos_agendados.Data }} | Hora: {{ voos_agendados.Hora }}
+            </li>
+          {% endfor %}
+        {% else %}
+           Nenhum voo agendado.
+        {% endif %}
+         </ul>
 
-        <h1 class="text"> Reservas do Voo </h1>
+
+        </div>
+
+        
 
     </body>
 </html>
