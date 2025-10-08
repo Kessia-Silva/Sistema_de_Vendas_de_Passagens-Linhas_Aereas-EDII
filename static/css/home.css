@@ -2,6 +2,7 @@
 body {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
+    padding-top: 80px; 
 }
 
 /* Navbar */
@@ -26,9 +27,18 @@ body {
     gap: 15px; /* espaço entre logo e texto */
 }
 
+/* Tirar o aspecto de link: */
+.logo-text a {
+    text-decoration: none;
+    color: inherit; /* pega a cor do h1 */
+}
+
 .logo-container img {
     height: 55px;
     width: auto;
+    text-decoration: none;
+    color: inherit;
+    
 }
 
 .logo-text {
@@ -61,4 +71,9 @@ body {
 /* Ícone dentro do botão */
 .circle-btn i {
     pointer-events: none;
+}
+
+.text{
+    color: #000000;
+    text-align: center;
 }

@@ -2,13 +2,17 @@ from flask import Flask, render_template, request, redirect, url_for #importando
 from arquivos.usuarios import usuarios # chamando o arquivo de usuarios
 app = Flask(__name__)  # cria a aplicação
 
-@app.route("/")        # define uma rota
+# Definindo Rotas
+@app.route("/")
 def home():
     return render_template("home.html")
 
+@app.route("/reservar_voo")   
+def reserva():
+    return render_template("reservar_voo.html")
+
 @app.route("/login", methods = ["GET", "POST"])
 def login():
-
     mensagem = "" # só processa se o form for enviado 
     if request.method == "POST":
         email = request.form.get("email")
@@ -17,12 +21,14 @@ def login():
         # Verifica email e senha
         for usuario in usuarios:
             if usuario["email"] == email and usuario["senha"] == senha:
-                return redirect(url_for("home"))
+                return redirect(url_for("reserva"))
             else:
                 mensagem = "Email ou senha incorretos!"
 
     return render_template("login.html", mensagem=mensagem)
 
+
+# Rodar a aplicação
 if __name__ == "__main__":
     app.run(debug=True)
 
