@@ -8,4 +8,4 @@ usuarios = [
       {"email": "antonio@gmail.com", "senha": "12345"},
       {"email": "pedro@gmail.com", "senha": "12345"},
       {"email": "marcos@gmail.com", "senha": "12345"},
-]
+] 
