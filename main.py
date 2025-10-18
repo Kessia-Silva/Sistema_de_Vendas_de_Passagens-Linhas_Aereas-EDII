@@ -7,7 +7,7 @@ app = Flask(__name__)  # cria a aplicação
 # Definindo Rotas
 @app.route("/")
 def home():
-    return render_template("home_1.html")
+    return render_template("home.html")
 
 @app.route("/reservar_voo")   
 def reserva():
