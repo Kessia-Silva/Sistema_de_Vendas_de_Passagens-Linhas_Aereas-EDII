@@ -63,20 +63,3 @@ button{
     color:#f44336;
    
 }
-.alert {
-    background-color: #f44336; /* vermelho de erro */
-    color: white;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 8px;
-    position: relative;
-    font-family: Arial, sans-serif;
-}
-
-.alert .fechar {
-    position: absolute;
-    right: 10px;
-    top: 5px;
-    cursor: pointer;
-    font-weight: bold;
-}
