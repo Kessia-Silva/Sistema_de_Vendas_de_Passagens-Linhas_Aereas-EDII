@@ -14,9 +14,9 @@ def home():
 def reserva():
     return render_template("reservar_voo.html", voos_agendados = voos)
 
-@app.route("/editar_voos")   
+@app.route("/InicialAdm")   
 def editar():
-    return render_template("editar_voo.html", voos_agendados = voos)
+    return render_template("InicialAdm.html", voos_agendados = voos)
 
 @app.route("/login_user", methods = ["GET", "POST"])
 def login_user():
@@ -50,6 +50,82 @@ def login_adm():
                 mensagem = "Email ou senha incorretos!"
 
     return render_template("login_adm.html", mensagem=mensagem)
+
+
+@app.route("/criar_voo", methods=["GET", "POST"])
+def criar_voo():
+    mensagem = ""
+    
+    if request.method == "POST":
+        codigo = request.form.get("Codigo_do_voo")
+        origem = request.form.get("Origem")
+        destino = request.form.get("Destino")
+        preco = request.form.get("Preco_da_passagem")
+        tipo_aeronave = request.form.get("Tipo_de_aeronave")
+        assentos = request.form.get("Numero_de_assentos")
+        hora = request.form.get("Hora")
+        data = request.form.get("Data")
+
+        # Verifica se o código do voo já existe
+        for voo in voos:
+            if voo["Codigo_do_voo"] == codigo:
+                mensagem = "Já existe um voo com esse código!"
+                return render_template("criar_voo.html", mensagem=mensagem)
+
+        # Adiciona o novo voo
+        novo_voo = {
+            "Codigo_do_voo": codigo,
+            "Origem": origem,
+            "Destino": destino,
+            "Preco_da_passagem": float(preco),
+            "Tipo_de_aeronave": tipo_aeronave,
+            "Numero_de_assentos": int(assentos),
+            "Hora": hora,
+            "Data": data
+        }
+
+        voos.append(novo_voo)
+        mensagem = "Voo cadastrado com sucesso!"
+        
+        # redireciona para o site de criação de novo
+        return render_template("criar_voo.html", mensagem=mensagem)
+
+    return render_template("criar_voo.html", mensagem=mensagem)
+
+@app.route("/editar_voo", methods=["GET", "POST"])
+def editar_voo():
+    mensagem = ""
+    voo_selecionado = None
+
+    # Se escolheu um voo para editar
+    if request.method == "POST":
+        codigo_escolhido = request.form.get("codigo_escolhido")
+
+        # Se ele clicou em "Carregar voo"
+        if "carregar" in request.form:
+            for voo in voos:
+                if voo["Codigo_do_voo"] == codigo_escolhido:
+                    voo_selecionado = voo
+                    break
+            if not voo_selecionado:
+                mensagem = "Voo não encontrado!"
+
+        # Se ele clicou em "Salvar alterações"
+        elif "salvar" in request.form:
+            for voo in voos:
+                if voo["Codigo_do_voo"] == codigo_escolhido:
+                    voo["Origem"] = request.form.get("origem")
+                    voo["Destino"] = request.form.get("destino")
+                    voo["Preco_da_passagem"] = float(request.form.get("preco"))
+                    voo["Tipo_de_aeronave"] = request.form.get("companhia")
+                    voo["Numero_de_assentos"] = int(request.form.get("assentos"))
+                    voo["Hora"] = request.form.get("hora")
+                    voo["Data"] = request.form.get("dataPartida")
+                    mensagem = "Voo atualizado com sucesso!"
+                    voo_selecionado = voo
+                    break
+
+    return render_template("editar_voo.html", voos=voos, voo=voo_selecionado, mensagem=mensagem)
 
 
 # Rodar a aplicação
