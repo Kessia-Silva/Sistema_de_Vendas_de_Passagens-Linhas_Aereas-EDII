@@ -127,6 +127,28 @@ def editar_voo():
 
     return render_template("editar_voo.html", voos=voos, voo=voo_selecionado, mensagem=mensagem)
 
+@app.route("/remover_voo", methods=["GET", "POST"])
+def remover_voo():
+    global voos 
+
+    voo = None
+    mensagem = None
+
+    if request.method == "POST":
+        codigo = request.form.get("codigo_escolhido")
+
+        # Quando clicar em "Carregar voo"
+        if "carregar" in request.form:
+            voo = next((v for v in voos if v["Codigo_do_voo"] == codigo), None)
+            if not voo:
+                mensagem = "Voo não encontrado."
+
+        # Quando clicar em "Deletar Voo"
+        elif "deletar" in request.form:
+            voos = [v for v in voos if v["Codigo_do_voo"] != codigo]
+            mensagem = f"Voo {codigo} removido com sucesso!"
+
+    return render_template("remover_voo.html", voos=voos, voo=voo, mensagem=mensagem)
 
 # Rodar a aplicação
 if __name__ == "__main__":
