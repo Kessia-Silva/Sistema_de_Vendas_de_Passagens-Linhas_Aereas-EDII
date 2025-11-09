@@ -1,9 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for #importando a classe Flask do pacote Flask
-from arquivos.usuarios import usuarios # chamando o arquivo de usuarios
-from arquivos.voos import voos # chamando o arquivo de voos
-from arquivos.adm import adms
+from arquivos.manipular_usuarios import carregar_usuarios, salvar_usuarios # chamando o arquivo de usuarios
+from arquivos.manipular_voos import carregar_voos, salvar_voos # chamando as funções para manipular o arquivo
+from arquivos.manipular_adm import carregar_adms, salvar_adms
 
 app = Flask(__name__)  # cria a aplicação
+
+voos = carregar_voos()
+adms = carregar_adms()
+usuarios = carregar_usuarios()
 
 # Definindo Rotas
 @app.route("/")
@@ -85,6 +89,7 @@ def criar_voo():
         }
 
         voos.append(novo_voo)
+        salvar_voos(voos)
         mensagem = "Voo cadastrado com sucesso!"
         
         # redireciona para o site de criação de novo
@@ -123,8 +128,10 @@ def editar_voo():
                     voo["Data"] = request.form.get("dataPartida")
                     mensagem = "Voo atualizado com sucesso!"
                     voo_selecionado = voo
+                    salvar_voos(voos)
                     break
 
+    
     return render_template("editar_voo.html", voos=voos, voo=voo_selecionado, mensagem=mensagem)
 
 @app.route("/remover_voo", methods=["GET", "POST"])
@@ -147,8 +154,14 @@ def remover_voo():
         elif "deletar" in request.form:
             voos = [v for v in voos if v["Codigo_do_voo"] != codigo]
             mensagem = f"Voo {codigo} removido com sucesso!"
+            salvar_voos(voos)
 
     return render_template("remover_voo.html", voos=voos, voo=voo, mensagem=mensagem)
+
+@app.route("/listar_voos")
+def listar_voos():
+    return render_template("listar_voos.html", voos=voos)
+
 
 # Rodar a aplicação
 if __name__ == "__main__":

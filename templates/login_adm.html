@@ -5,7 +5,9 @@
         <link rel="icon" href="static\img\IconAviao.ico" type="image/x-icon">
          <link rel="stylesheet" href="static/css/login_adm.css">
     </head>
+
     <body>
+        
         <div class = "login-container">
             <h1 class = "login-text">Administrador</h1>
             <form class = "formulario" method="post" action="/login_adm">
@@ -21,6 +23,12 @@
                 {% if mensagem %}
                  <p class = "mensageErro">{{ mensagem }}</p>
              {% endif %}
+
+             <div class="voltar-container" style="margin-top: 1rem; text-align: center;">
+          <a href="/" title="Voltar para o início" style="color: #1e40af; text-decoration: none;">
+            <i class="fas fa-home"></i> Voltar para o início
+          </a>
+        </div>
 
             </form>
         </div>
