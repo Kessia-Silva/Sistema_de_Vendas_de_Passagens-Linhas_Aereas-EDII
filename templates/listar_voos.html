@@ -22,12 +22,9 @@
       </div>
 
     <div class="d-flex align-items-center">
-     <a href="/InicialAdm" class="me-3" title="Início">
-        <i class="fas fa-home fa-lg" style="color: white;"></i>
-     </a>
-     <a href="/login_adm" title="Login Admin">
-        <i class="fas fa-user-shield fa-lg" style="color: white;"></i>
-     </a>
+     <a href="/InicialAdm" title="Sair">
+        <i class="fas fa-right-from-bracket fa-lg" style="color: white;"></i>
+    </a>
     </div>
 
     </header>
@@ -37,7 +34,7 @@
       <h2 class="mb-4 text-center">Lista de Voos</h2>
 
       {% if voos %}
-      <table class="table table-bordered table-hover voos-table">
+      <table class="table table-bordered table-hover voos-table" id = "tabela">
         <thead>
           <tr>
             <th>Código</th>
