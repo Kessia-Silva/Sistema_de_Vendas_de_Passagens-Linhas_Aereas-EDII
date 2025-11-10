@@ -163,6 +163,64 @@ def listar_voos():
     return render_template("listar_voos.html", voos=voos)
 
 
+
+@app.route("/gerenciar_usuario", methods=["GET", "POST"])
+def gerenciar_usuario():
+    mensagem = ""
+    usuario_selecionado = None
+
+    if request.method == "POST":
+        email_escolhido = request.form.get("email_escolhido", "").strip()
+
+        if not email_escolhido:
+            mensagem = "Por favor, selecione um usuário."
+        else:
+            # --- Carregar usuário ---
+            if "carregar" in request.form:
+                usuario_selecionado = next((u for u in usuarios if u["email"] == email_escolhido), None)
+                if not usuario_selecionado:
+                    mensagem = f"Usuário com e-mail {email_escolhido} não encontrado!"
+
+            # --- Salvar alterações ---
+            elif "salvar" in request.form:
+                # Procura o índice do usuário na lista
+                for i, u in enumerate(usuarios):
+                    if u["email"] == email_escolhido:
+                        # Atualiza os dados diretamente na lista
+                        usuarios[i]["email"] = request.form.get("email", u["email"]).strip()
+                        usuarios[i]["senha"] = request.form.get("senha", u["senha"]).strip()
+
+                        # Atualiza objeto selecionado para o template
+                        usuario_selecionado = usuarios[i]
+
+                        # Salva no arquivo ou banco
+                        salvar_usuarios(usuarios)
+                        mensagem = f"Usuário {email_escolhido} atualizado com sucesso!"
+                        break
+                else:
+                    mensagem = f"Usuário com e-mail {email_escolhido} não encontrado!"
+
+            # --- Remover usuário ---
+            elif "remover" in request.form:
+                if any(u["email"] == email_escolhido for u in usuarios):
+                    usuarios[:] = [u for u in usuarios if u["email"] != email_escolhido]
+                    salvar_usuarios(usuarios)
+                    mensagem = f"Usuário {email_escolhido} removido com sucesso!"
+                    usuario_selecionado = None
+                else:
+                    mensagem = f"Usuário com e-mail {email_escolhido} não encontrado!"
+
+
+            # --- Botão: Remover usuário ---
+            elif "remover" in request.form:
+                usuarios[:] = [u for u in usuarios if u["email"] != email_escolhido]
+                salvar_usuarios(usuarios)
+                mensagem = f"Usuário {email_escolhido} removido com sucesso!"
+                usuario_selecionado = None
+
+    
+    return render_template("gerenciar_usuario.html", usuarios=usuarios, usuario=usuario_selecionado, mensagem=mensagem)
+
 # Rodar a aplicação
 if __name__ == "__main__":
     app.run(debug=True)
