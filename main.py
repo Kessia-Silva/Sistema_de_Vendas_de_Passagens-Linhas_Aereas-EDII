@@ -163,7 +163,6 @@ def listar_voos():
     return render_template("listar_voos.html", voos=voos)
 
 
-
 @app.route("/gerenciar_usuario", methods=["GET", "POST"])
 def gerenciar_usuario():
     mensagem = ""
@@ -220,6 +219,11 @@ def gerenciar_usuario():
 
     
     return render_template("gerenciar_usuario.html", usuarios=usuarios, usuario=usuario_selecionado, mensagem=mensagem)
+
+@app.route("/chat_bot")
+def chat_bot():
+    return render_template("chat_bot.html")
+
 
 # Rodar a aplicação
 if __name__ == "__main__":

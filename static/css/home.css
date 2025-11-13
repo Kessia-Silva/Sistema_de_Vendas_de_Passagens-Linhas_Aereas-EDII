@@ -82,4 +82,10 @@ main {
   margin-top: 60px; /* Ajuste conforme a altura da navbar */
 }
 
+.chatbot-btn {
+    position: fixed;   /* fixa na tela */
+    right: 100px;       /* distância da borda direita */
+    bottom: 20px;      /* distância do rodapé */
+}
+
 
