@@ -1,0 +1,245 @@
+
+ <!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Linhas Aéreas </title>
+    <link rel="icon" href="static\img\IconAviao.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="static/css/padrao.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!-- Bootstrap CSS via CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+
+</head>
+
+<body>
+   <!-- Navbar -->
+<header class="Navbar d-flex justify-content-between align-items-center p-3">
+    <div class="logo-container d-flex align-items-center">
+      <h1 class = "logo-text"> <a href="{{ url_for('home') }}"> Linhas Aéreas EDII </a></h1>
+        <img src="static/img/bandeiraDoBrasil.png" alt="Mapa Brasil" height="40">
+    </div>
+ <div class="d-flex align-items-center" style="gap: 3px;" >
+  <a href="/reservar_voo" class="btn btn-outline-light px-4 rounded-pill me-3"
+   style="background-color:#1e40af; border:none;">
+    Reservar Voo
+</a>
+
+ <!-- Ícone de usuário adm para sair -->
+    <div class="dropdown user-dropdown-container">
+  <a class="user-btn" href="#" role="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="fas fa-user"></i>
+  </a>
+
+  <ul class="dropdown-menu dropdown-menu-end user-dropdown" aria-labelledby="userMenu">
+    <li class="dropdown-header">
+      <span class="user-name">Olá, {{ email }}</span>
+    </li>
+    <li><hr class="dropdown-divider"></li>
+    <li>
+      <a class="dropdown-item" href="/logoutUser">
+        <i class="fas fa-sign-out-alt me-2"></i>Sair
+      </a>
+    </li>
+  </ul>
+</div>
+
+     <a href="/chat_bot" title="ChatBot" class="chatbot-btn">
+      <img src="static/img/ChatBot.png" alt="ChatBot" height="40">
+    </a>
+</div>
+</header>
+<main class="mt-5 pt-4">
+
+    <!-- Carousel -->
+    <div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel">
+
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2"></button>
+      </div>
+
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+           <img src="static/img/ilustracao_banner1.png" class="d-block w-100" alt="Banner 1" height="400">
+
+          <div class="container">
+            <div class="carousel-caption">
+              <h1>Explore o mundo com a Linhas Aéreas EDII</h1>
+              <p class="opacity-75">Encontre voos para destinos incríveis, com conforto, segurança e praticidade. Sua próxima aventura começa aqui.</p>
+              <p><a class="btn btn-lg btn-primary" href="{{ url_for('reserva') }}">Ver voos disponíveis</a></p>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <img src="static\img\banner_ilustracao2.png" class="d-block w-100" alt="Banner 1" height="400">
+
+          <div class="container">
+            <div class="carousel-caption">
+              <h1>Reserve com facilidade</h1>
+              <p>Nosso sistema permite agendar sua passagem de forma rápida e intuitiva. Basta fazer login, escolher o destino e confirmar sua viagem.</p>
+              <p><a class="btn btn-lg btn-primary" href="/login_user">Faça seu login</a></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <img src="static\img\banner_ilustracao3.png" class="d-block w-100" alt="Banner 1" height="400">
+          <div class="container">
+            <div class="carousel-caption text-end">
+              <h1>Experiência e tecnologia a bordo</h1>
+              <p>Nossas aeronaves contam com tecnologia de ponta e atendimento de qualidade. Viaje com tranquilidade e chegue ao seu destino com estilo.</p>
+              <p><a class="btn btn-lg btn-primary" href="#">Saiba mais</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+
+
+
+    <!-- Marketing -->
+    <div class="container marketing mt-5">
+      <div class="row">
+        <div class="col-lg-4 text-center">
+          <img src="static\img\ilustracao1.png"
+           alt="Descrição da imagem"
+           class="bd-placeholder-img rounded-circle"
+           width="140"
+           height="140">
+          <h2 class="fw-normal" >Conforto em todos os voos</h2>
+          <p>Espaço, entretenimento e comodidade em cada assento. Viajar ficou mais agradável do que nunca.</p>
+          <p><a class="btn btn-secondary" href="#">Ver detalhes &raquo;</a></p>
+        </div>
+        <div class="col-lg-4 text-center">
+          <img src="static\img\ilustracao2.png"
+           alt="Descrição da imagem"
+           class="bd-placeholder-img rounded-circle"
+           width="140"
+           height="140">
+
+
+          <h2 class="fw-normal">Destinos imperdíveis</h2>
+          <p>Conheça rotas nacionais e internacionais com preços especiais. Escolha seu próximo destino com a gente!</p>
+          <p><a class="btn btn-secondary" href="#">Explorar destinos &raquo;</a></p>
+        </div>
+        <div class="col-lg-4 text-center">
+          <img src="static\img\ilustracao3.png"
+           alt="Descrição da imagem"
+           class="bd-placeholder-img rounded-circle"
+           width="140"
+           height="140">
+          <h2 class="fw-normal">Segurança em primeiro lugar</h2>
+          <p>Nossa frota é constantemente revisada e monitorada. Sua viagem é nossa prioridade.</p>
+          <p><a class="btn btn-secondary" href="#">Saiba mais &raquo;</a></p>
+        </div>
+      </div>
+    </div>
+
+<!-- START THE FEATURETTES -->
+ <!-- Texto 1 -->
+   <div class="container marketing mt-5"> </div>
+
+   <div class="container text-center">
+
+   <hr class="featurette-divider">
+
+    <div class="row featurette align-items-center">
+      <div class="col-md-7">
+        <h2 class="featurette-heading fw-normal lh-1">
+          Tecnologia que conecta pessoas <span class="text-body-secondary"> <br> Do check-in ao pouso, tudo pensado pra você.</span>
+        </h2>
+       <p class="lead">O sistema Linhas Aéreas EDII foi desenvolvido para simplificar sua experiência de viagem, unindo inovação e praticidade em um só lugar.</p>
+      </div>
+    <div class="col-md-5">
+       <img src="static\img\ilustracao4.png"
+         class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+         alt="Imagem representando tecnologia e aviação"
+         width="500"
+         height="500">
+        <title>Placeholder</title>
+        <rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect>
+        <text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em"></text>
+      </svg>
+    </div>
+   </div>
+
+  <div class="container marketing mt-5"> </div>
+
+  <hr class="featurette-divider">
+
+  <div class="container marketing mt-5"> </div>
+  
+   <!-- Texto 2 -->
+  <div class="row featurette align-items-center">
+    <div class="col-md-7 order-md-2">
+      <h2 class="featurette-heading fw-normal lh-1">
+        Rumo a novos destinos <span class="text-body-secondary"><br>O mundo está a um clique de distância.</span>
+      </h2>
+      <p class="lead">Explore voos para diferentes continentes, descubra novas culturas e viva experiências inesquecíveis. Reserve com facilidade e viaje sem preocupações.</p>
+    </div>
+    <div class="col-md-5 order-md-1">
+      <img src="static\img\ilustracao6.png"
+         class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+         alt="Imagem representando tecnologia e aviação"
+         width="500"
+         height="500">
+    </div>
+  </div>
+
+   <div class="container marketing mt-5"> </div>
+  <hr class="featurette-divider">
+  <div class="container marketing mt-5"> </div>
+
+  <div class="row featurette align-items-center">
+    <div class="col-md-7">
+      <h2 class="featurette-heading fw-normal lh-1">
+        Nosso compromisso com você <span class="text-body-secondary"><br> Qualidade, pontualidade e confiança.</span>
+      </h2>
+      <p class="lead">Cada detalhe é pensado para garantir que sua viagem seja tranquila e segura — do momento da reserva até o embarque.</p>
+    </div>
+    <div class="col-md-5">
+      <img src="static\img\ilustracao5.png"
+         class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+         alt="Imagem representando tecnologia e aviação"
+         width="500"
+         height="500">
+    </div>
+  </div>
+   <div class="container marketing mt-5"> </div>
+   <hr class="featurette-divider">
+   <div class="container marketing mt-5"> </div>
+ </div>
+
+</main>
+
+
+<!-- Footer -->
+    <footer class="container mt-5">
+      <p class="float-end"><a href="#">Back to top</a></p>
+      <p>&copy; 2025 Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+    </footer>
+
+
+  <!-- Bootstrap JS via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

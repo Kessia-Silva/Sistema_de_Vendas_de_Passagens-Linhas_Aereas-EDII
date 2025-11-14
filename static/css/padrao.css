@@ -121,8 +121,41 @@ section {
       }
     }
 
-/*
-#tabela th{
-    background-color: #4682B4;
+.user-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff22; /* semitransparente */
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    transition: background-color 0.3s, transform 0.2s;
 }
+
+.user-btn:hover {
+    background-color: #ffffff55;
+    transform: scale(1.1);
+}
+
+.user-dropdown {
+    background-color: #1e40af; /* azul escuro */
+    border-radius: 10px;
+    min-width: 180px;
+    padding: 0.5rem 0;
+}
+
+.user-dropdown .dropdown-item:hover {
+    background-color: #3749a0; /* hover mais escuro */
+}
+
+.user-name {
+    font-weight: bold;
+    cursor: default;
+    color: black;
+}
+
 
