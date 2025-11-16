@@ -28,5 +28,12 @@
         "email": "Antonio@gmail.com",
         "senha": "12345",
         "cpf": "666"
+    },
+
+    {
+        "email": "felipe@gmail.com",
+        "senha": "12345",
+        "cpf": "3900"
     }
+
 ]
