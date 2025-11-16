@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for #importando a classe Flask do pacote Flask
+from flask import Flask, render_template, request, redirect, url_for, session #importando a classe Flask do pacote Flask
 from arquivos.manipular_usuarios import carregar_usuarios, salvar_usuarios # chamando o arquivo de usuarios
 from arquivos.manipular_voos import carregar_voos, salvar_voos # chamando as funções para manipular o arquivo
 from arquivos.manipular_adm import carregar_adms, salvar_adms
@@ -6,6 +6,9 @@ from arquivos.manipular_VendasPassagens import carregar_registros_passagens, sal
 from arquivos.ArvoreB_VendaPassagens import arvore
 
 app = Flask(__name__)  # cria a aplicação
+
+
+app.secret_key = "123456"
 
 voos = carregar_voos()
 adms = carregar_adms()
@@ -20,9 +23,12 @@ def home():
 def reserva():
     return render_template("reservar_voo.html", voos_agendados = voos)
 
+
 @app.route("/InicialAdm")   
 def editar():
-    return render_template("InicialAdm.html", voos_agendados = voos)
+    if "email" not in session:
+        return redirect(url_for("login_adm"))  # bloqueia acesso direto
+    return render_template("InicialAdm.html", voos_agendados = voos, email=session["email"])
 
 @app.route("/login_user", methods = ["GET", "POST"])
 def login_user():
@@ -34,12 +40,17 @@ def login_user():
         # Verifica email e senha
         for usuario in usuarios:
             if usuario["email"] == email and usuario["senha"] == senha:
-                return redirect(url_for("reserva"))
-            else:
-                mensagem = "Email ou senha incorretos!"
+                session["email"] = email  # guarda na sessão
+                return redirect(url_for("homeUser")) 
+            
+        mensagem = "Email ou senha incorretos!"
 
     return render_template("login_user.html", mensagem=mensagem)
 
+
+@app.route("/homeUser")
+def homeUser():
+    return render_template("homeUser.html", email=session["email"])
 
 @app.route("/login_adm", methods = ["GET", "POST"])
 def login_adm():
@@ -51,12 +62,24 @@ def login_adm():
         # Verifica email e senha
         for adm in adms:
             if adm["email"] == email and adm["senha"] == senha:
+                session["email"] = email  # guarda na sessão 
                 return redirect(url_for("editar"))
-            else:
-                mensagem = "Email ou senha incorretos!"
+            
+            # Se o loop terminou e não retornou, então está errado
+        mensagem = "Email ou senha incorretos!"
 
     return render_template("login_adm.html", mensagem=mensagem)
 
+@app.route("/logoutAdm")
+def logoutAdm():
+    session.clear()
+    return redirect(url_for("login_adm"))
+
+
+@app.route("/logoutUser")
+def logoutUser():
+    session.clear()
+    return redirect(url_for("login_user"))
 
 @app.route("/criar_voo", methods=["GET", "POST"])
 def criar_voo():
