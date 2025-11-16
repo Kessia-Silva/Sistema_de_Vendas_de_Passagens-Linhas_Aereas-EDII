@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for #importando
 from arquivos.manipular_usuarios import carregar_usuarios, salvar_usuarios # chamando o arquivo de usuarios
 from arquivos.manipular_voos import carregar_voos, salvar_voos # chamando as funções para manipular o arquivo
 from arquivos.manipular_adm import carregar_adms, salvar_adms
+from arquivos.manipular_VendasPassagens import carregar_registros_passagens, salvar_registros_passagens
+from arquivos.ArvoreB_VendaPassagens import arvore
 
 app = Flask(__name__)  # cria a aplicação
 
