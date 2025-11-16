@@ -23,6 +23,13 @@ def home():
 def reserva():
     return render_template("reservar_voo.html", voos_agendados = voos)
 
+@app.route("/reservarPassagem/<codigovoo>")   
+def reservarPassagem(codigovoo):
+    for voo in voos:
+        if voo["Codigo_do_voo"] == codigovoo:
+            voo_encontrado = voo
+    return render_template("reservar_passagem.html", voo_procurado = voo_encontrado)
+
 
 @app.route("/InicialAdm")   
 def editar():

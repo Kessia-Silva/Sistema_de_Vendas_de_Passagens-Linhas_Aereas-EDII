@@ -131,3 +131,27 @@ class ArvoreB:
       # Chama recursivamente para os filhos
       for filho in no.filhos:
         self.imprimir(filho, nivel + 1)
+
+    # ----------------------------------------
+    # Buscar na arvore
+    # ----------------------------------------
+    def buscar(self, codigo_passagem, no=None):
+     if no is None:
+        no = self.raiz
+
+     i = 0
+     # Procura a posição onde o código poderia estar
+     while i < len(no.chaves) and codigo_passagem > no.chaves[i].codigo_passagem:
+        i += 1
+
+     # Se encontrou exatamente o código
+     if i < len(no.chaves) and codigo_passagem == no.chaves[i].codigo_passagem:
+        return no.chaves[i]
+
+     # Se for nó folha e não achou → retorna None
+     if no.eh_folha:
+        return None
+
+     # Se não for folha → desce para o filho correto
+     return self.buscar(codigo_passagem, no.filhos[i])
+
