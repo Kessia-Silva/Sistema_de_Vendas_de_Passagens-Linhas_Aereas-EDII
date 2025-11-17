@@ -16,10 +16,10 @@
         "Destino": "Japão",
         "Preco_da_passagem": 8500,
         "Tipo_de_aeronave": "Jato",
-        "Numero_de_assentos": 150,
+        "Numero_de_assentos": 80,
         "Hora": "15:30",
         "Data": "22/11",
-        "Assentos_ocupados": ["1", "2", "3", "4"]
+        "Assentos_ocupados": ["16", "2", "3", "4"]
     },
     {
         "Codigo_do_voo": "7689",
@@ -27,7 +27,7 @@
         "Destino": "Estados Unidos",
         "Preco_da_passagem": 12000,
         "Tipo_de_aeronave": "Boeing 747",
-        "Numero_de_assentos": 300,
+        "Numero_de_assentos": 30,
         "Hora": "08:00",
         "Data": "25/11",
         "Assentos_ocupados":["1", "2", "3", "4", "5"]
@@ -38,7 +38,7 @@
         "Destino": "França",
         "Preco_da_passagem": 9500,
         "Tipo_de_aeronave": "Airbus A320",
-        "Numero_de_assentos": 180,
+        "Numero_de_assentos": 90,
         "Hora": "12:45",
         "Data": "28/11",
         "Assentos_ocupados":[]
@@ -49,7 +49,7 @@
         "Destino": "Alemanha",
         "Preco_da_passagem": 9800,
         "Tipo_de_aeronave": "Jato",
-        "Numero_de_assentos": 200,
+        "Numero_de_assentos": 100,
         "Hora": "20:15",
         "Data": "30/11",
         "Assentos_ocupados":[]

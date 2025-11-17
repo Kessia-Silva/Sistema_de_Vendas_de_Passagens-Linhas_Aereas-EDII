@@ -26,30 +26,37 @@
         }
 
         .grade-assentos {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 10px;
-            max-width: 700px;
-            margin: 0 auto;
-        }
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* espaço entre fileiras */
+    max-width: 300px;
+    margin: 0 auto;
+}
 
-        .assento {
-            padding: 12px;
-            border-radius: 6px;
-            text-align: center;
-            font-weight: bold;
-            cursor: pointer;
-            color: white;
-        }
+.fileira {
+    display: flex;
+    justify-content: space-between;
+}
 
-        .livre {
-            background: #28a745; /* verde */
-        }
+.assento {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    text-align: center;
+    line-height: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
 
-        .ocupado {
-            background: #dc3545; /* vermelho */
-            cursor: not-allowed;
-        }
+.livre {
+    background: #7ed957;
+}
+
+.ocupado {
+    background: #ff5757;
+    cursor: not-allowed;
+}
+
 
         
 body {
@@ -140,14 +147,9 @@ main {
     right: 100px;       /* distância da borda direita */
     bottom: 20px;      /* distância do rodapé */
 }
-
-
-
-
-
-
     </style>
   </head>
+
   <body>
     <!-- Cabeçalho -->
      <header class = "navbar">
@@ -177,12 +179,19 @@ main {
 
         <!-- Grade de Assentos -->
         <div class="grade-assentos">
-            {% for a in assentos %}
-                <div class="assento {{ a.status }}">
-                    {{ a.numero }}
-                </div>
+    {% for i in range(0, assentos|length, 4) %}
+        <div class="fileira">
+            {% for j in range(4) %}
+                {% set a = assentos[i + j] if i + j < assentos|length else None %}
+                {% if a %}
+                    <div class="assento {{ a.status }}">{{ a.numero }}</div>
+                    {% if j == 1 %}<div style="width: 20px"></div>{% endif %}  {# corredor #}
+                {% endif %}
             {% endfor %}
         </div>
+    {% endfor %}
+</div>
+
 
     </main>
     
