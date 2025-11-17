@@ -46,6 +46,9 @@
     line-height: 40px;
     font-weight: bold;
     cursor: pointer;
+    text-decoration: none;
+    color: white; 
+    display: inline-block; 
 }
 
 .livre {
@@ -184,13 +187,20 @@ main {
             {% for j in range(4) %}
                 {% set a = assentos[i + j] if i + j < assentos|length else None %}
                 {% if a %}
-                    <div class="assento {{ a.status }}">{{ a.numero }}</div>
+                    {% if a.status == 'livre' %}
+                        <a href="#" class="assento {{ a.status }}">
+                            {{ a.numero }}
+                        </a>
+                    {% else %}
+                        <div class="assento {{ a.status }}">{{ a.numero }}</div>
+                    {% endif %}
                     {% if j == 1 %}<div style="width: 20px"></div>{% endif %}  {# corredor #}
                 {% endif %}
             {% endfor %}
         </div>
     {% endfor %}
 </div>
+
 
 
     </main>
