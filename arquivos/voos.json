@@ -7,7 +7,8 @@
         "Tipo_de_aeronave": "Nave",
         "Numero_de_assentos": 60,
         "Hora": "10:10",
-        "Data": "20/11"
+        "Data": "20/11",
+        "Assentos_ocupados":[]
     },
     {
         "Codigo_do_voo": "4521",
@@ -17,7 +18,8 @@
         "Tipo_de_aeronave": "Jato",
         "Numero_de_assentos": 150,
         "Hora": "15:30",
-        "Data": "22/11"
+        "Data": "22/11",
+        "Assentos_ocupados": ["1", "2", "3", "4"]
     },
     {
         "Codigo_do_voo": "7689",
@@ -27,7 +29,8 @@
         "Tipo_de_aeronave": "Boeing 747",
         "Numero_de_assentos": 300,
         "Hora": "08:00",
-        "Data": "25/11"
+        "Data": "25/11",
+        "Assentos_ocupados":["1", "2", "3", "4", "5"]
     },
     {
         "Codigo_do_voo": "9987",
@@ -37,7 +40,8 @@
         "Tipo_de_aeronave": "Airbus A320",
         "Numero_de_assentos": 180,
         "Hora": "12:45",
-        "Data": "28/11"
+        "Data": "28/11",
+        "Assentos_ocupados":[]
     },
     {
         "Codigo_do_voo": "1122",
@@ -47,6 +51,7 @@
         "Tipo_de_aeronave": "Jato",
         "Numero_de_assentos": 200,
         "Hora": "20:15",
-        "Data": "30/11"
+        "Data": "30/11",
+        "Assentos_ocupados":[]
     }
 ]

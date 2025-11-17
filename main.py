@@ -14,6 +14,7 @@ voos = carregar_voos()
 adms = carregar_adms()
 usuarios = carregar_usuarios()
 
+
 # Definindo Rotas
 @app.route("/")
 def home():
@@ -23,12 +24,22 @@ def home():
 def reserva():
     return render_template("reservar_voo.html", voos_agendados = voos)
 
-@app.route("/reservarPassagem/<codigovoo>")   
-def reservarPassagem(codigovoo):
-    for voo in voos:
-        if voo["Codigo_do_voo"] == codigovoo:
-            voo_encontrado = voo
-    return render_template("reservar_passagem.html", voo_procurado = voo_encontrado)
+@app.route("/mapa_voo/<codigo>")
+def mapaVoo(codigo):
+    voo = next((v for v in voos if v["Codigo_do_voo"] == codigo), None)
+    if voo is None:
+        return "Voo não encontrado", 404
+
+    total = voo["Numero_de_assentos"]
+    ocupados = voo["Assentos_ocupados"]
+
+    assentos = [
+        {"numero": i, "status": "ocupado" if str(i) in ocupados else "livre"}
+        for i in range(1, total + 1)
+    ]
+
+    return render_template("mapa_voo.html", voo=voo, assentos=assentos)
+
 
 
 @app.route("/InicialAdm")   

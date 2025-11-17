@@ -46,7 +46,8 @@
           {% if voos_agendados %}
             {% for voo in voos_agendados %}
               <div class="col">
-                <a href="/reservarPassagem/{{ voo.Codigo_do_voo }}" class="text-decoration-none text-dark">
+                <a href="{{ url_for('mapaVoo', codigo=voo['Codigo_do_voo']) }}" class="text-decoration-none text-dark">
+
                   <div class="card shadow-sm h-100 hover-card">
                     <img src="static/img/Voo_imagem.jpg" class="card-img-top" alt="Voo">
                     <div class="card-body">
