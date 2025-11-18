@@ -9,7 +9,7 @@
         "codigo_passagem": 1002,
         "cpf": "222",
         "codigo_voo": "7689",
-        "assento": "1"
+        "assento": "18"
     },
     {
         "codigo_passagem": 1003,
@@ -27,13 +27,13 @@
         "codigo_passagem": 1005,
         "cpf": "222",
         "codigo_voo": "4521",
-        "assento": "3"
+        "assento": "23"
     },
     {
         "codigo_passagem": 1006,
         "cpf": "333",
         "codigo_voo": "7689",
-        "assento": "3"
+        "assento": "27"
     },
     {
         "codigo_passagem": 1007,

@@ -19,7 +19,7 @@
         "Numero_de_assentos": 80,
         "Hora": "15:30",
         "Data": "22/11",
-        "Assentos_ocupados": ["16", "2", "3", "4"]
+        "Assentos_ocupados": ["16", "2", "23", "4","5"]
     },
     {
         "Codigo_do_voo": "7689",
@@ -30,7 +30,7 @@
         "Numero_de_assentos": 30,
         "Hora": "08:00",
         "Data": "25/11",
-        "Assentos_ocupados":["1", "2", "3", "4", "5"]
+        "Assentos_ocupados":["18", "2", "27", "4", "5"]
     },
     {
         "Codigo_do_voo": "9987",
