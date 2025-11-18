@@ -24,7 +24,9 @@
         "Hora": "15:30",
         "Data": "22/11",
         "Assentos_ocupados": [
-            "23"
+            "23",
+            "11",
+            "6"
         ]
     },
     {
@@ -58,6 +60,8 @@
         "Numero_de_assentos": 100,
         "Hora": "20:15",
         "Data": "30/11",
-        "Assentos_ocupados": []
+        "Assentos_ocupados": [
+            "13"
+        ]
     }
 ]

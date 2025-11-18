@@ -385,34 +385,69 @@ tfoot {
   </button>
 </div>
 
-<div id="mensagem" style="display:none; color: green; margin-top: 10px;">
-  Reserva concluída!
-</div>
-
   </form>
 </div>
 
+<!-- Modal do Recibo -->
+<div id="recibo-modal" style="display:none; 
+                             position: fixed; 
+                             top: 50%; left: 50%; 
+                             transform: translate(-50%, -50%);
+                             background-color: #fff; 
+                             padding: 30px; 
+                             border-radius: 10px; 
+                             box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+                             z-index: 1000; 
+                             text-align: center;">
+    <h2>Recibo da Reserva</h2>
+    <p>Voo: <span id="recibo-codigo"></span></p>
+    <p>Assento: <span id="recibo-assento"></span></p>
+    <p>CPF: <span id="recibo-cpf"></span></p>
+    <button id="fechar-recibo" style="margin-top:20px; padding:10px 20px;">Fechar</button>
+</div>
+
+<!-- Fundo escuro atrás do modal -->
+<div id="recibo-fundo" style="display:none;
+                              position: fixed;
+                              top:0; left:0;
+                              width:100%; height:100%;
+                              background: rgba(0,0,0,0.5);
+                              z-index: 999;"></div>
+
 <script>
 document.getElementById('confirmar').addEventListener('click', function() {
-    // Mostra a mensagem
-    document.getElementById('mensagem').style.display = 'block';
+    this.disabled = true; // desabilita o botão
 
-    // Desabilita o botão para não clicar de novo
-    this.disabled = true;
-
-    // Chama a rota do Flask para registrar o assento
     fetch(`/reservar_assento/{{ voo['Codigo_do_voo'] }}/{{ assento }}`, {
         method: 'POST'
     })
     .then(response => {
         if(response.ok) {
-            console.log('Assento registrado com sucesso');
+            // Preenche o recibo
+            document.getElementById('recibo-codigo').textContent = "{{ voo['Codigo_do_voo'] }}";
+            document.getElementById('recibo-assento').textContent = "{{ assento }}";
+            document.getElementById('recibo-cpf').textContent = "{{ session['cpf'] }}";
+
+            // Mostra o modal e o fundo
+            document.getElementById('recibo-modal').style.display = 'block';
+            document.getElementById('recibo-fundo').style.display = 'block';
         } else {
-            console.log('Erro ao registrar assento');
+            alert('Erro ao registrar assento!');
         }
     });
 });
+
+// Fechar o modal
+document.getElementById('fechar-recibo').addEventListener('click', function() {
+    document.getElementById('recibo-modal').style.display = 'none';
+    document.getElementById('recibo-fundo').style.display = 'none';
+    
+    // Redireciona para o menu do usuário
+    window.location.href = "{{ url_for('homeUser') }}";
+});
 </script>
+
+
 
 
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none">

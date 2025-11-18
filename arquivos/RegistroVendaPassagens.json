@@ -4,5 +4,23 @@
         "cpf": "3900",
         "codigo_voo": "4521",
         "assento": "23"
+    },
+    {
+        "codigo_passagem": 1003,
+        "cpf": "3900",
+        "codigo_voo": "4521",
+        "assento": "11"
+    },
+    {
+        "codigo_passagem": 1004,
+        "cpf": "3900",
+        "codigo_voo": "4521",
+        "assento": "6"
+    },
+    {
+        "codigo_passagem": 1005,
+        "cpf": "3900",
+        "codigo_voo": "1122",
+        "assento": "13"
     }
 ]
