@@ -40,6 +40,13 @@ def mapaVoo(codigo):
 
     return render_template("mapa_voo.html", voo=voo, assentos=assentos)
 
+@app.route("/confirmarReserva/<codigo>/<assento>")
+def confirmarReserva(codigo, assento):
+    voo = next((v for v in voos if v["Codigo_do_voo"] == codigo), None)
+    if voo is None:
+        return "Voo não encontrado", 404
+
+    return render_template("confirmarReserva.html", voo=voo, assento=assento)
 
 
 @app.route("/InicialAdm")   

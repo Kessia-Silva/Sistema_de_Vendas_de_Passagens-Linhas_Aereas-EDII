@@ -188,9 +188,11 @@ main {
                 {% set a = assentos[i + j] if i + j < assentos|length else None %}
                 {% if a %}
                     {% if a.status == 'livre' %}
-                        <a href="#" class="assento {{ a.status }}">
-                            {{ a.numero }}
+                        <a href="{{ url_for('confirmarReserva', codigo=voo['Codigo_do_voo'], assento=a.numero|string) }}" class="assento {{ a.status }}">
+                      {{ a.numero }}
                         </a>
+
+
                     {% else %}
                         <div class="assento {{ a.status }}">{{ a.numero }}</div>
                     {% endif %}
