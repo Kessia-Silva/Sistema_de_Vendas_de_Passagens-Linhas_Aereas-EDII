@@ -22,5 +22,11 @@
         "cpf": "3900",
         "codigo_voo": "1122",
         "assento": "13"
+    },
+    {
+        "codigo_passagem": 1006,
+        "cpf": "111",
+        "codigo_voo": "3413",
+        "assento": "4"
     }
 ]
