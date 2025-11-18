@@ -10,6 +10,63 @@
 </head>
 
 <body>
+  <!-- From Uiverse.io by ahmed150up --> 
+  <div class="card">
+    <div class="chat-header">Chat</div>
+      <div class="chat-window">
+        <ul class="message-list"></ul>
+      </div>
+      <div class="chat-input">
+          <input type="text" class="message-input" placeholder="Pergunte alguma coisa">
+          <button class="send-button">Send</button>
+      </div>
+    </div>
+
+
+    <script>
+const messageInput = document.querySelector(".message-input");
+const sendButton = document.querySelector(".send-button");
+const messageList = document.querySelector(".message-list");
+
+// Função para adicionar mensagens na tela
+function addMessage(text, sender) {
+    const li = document.createElement("li");
+    li.textContent = text;
+    li.className = sender; // "user" ou "bot"
+    messageList.appendChild(li);
+    messageList.scrollTop = messageList.scrollHeight;
+}
+
+// Enviar mensagem para o Flask
+async function sendMessage() {
+    const msg = messageInput.value.trim();
+    if (!msg) return;
+
+    addMessage(msg, "user");
+    messageInput.value = "";
+
+    try {
+        const response = await fetch("/chat", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({message: msg})
+        });
+        const data = await response.json();
+        addMessage(data.reply, "bot");
+    } catch (error) {
+        addMessage("Erro ao conectar com o servidor.", "bot");
+    }
+}
+
+// Enviar ao clicar no botão
+sendButton.addEventListener("click", sendMessage);
+
+// Enviar ao pressionar Enter
+messageInput.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") sendMessage();
+});
+</script>
+  
 </body>
 
 </html>

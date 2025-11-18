@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session #importando a classe Flask do pacote Flask
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session #importando a classe Flask do pacote Flask
 from arquivos.manipular_usuarios import carregar_usuarios, salvar_usuarios # chamando o arquivo de usuarios
 from arquivos.manipular_voos import carregar_voos, salvar_voos # chamando as funções para manipular o arquivo
 from arquivos.manipular_adm import carregar_adms, salvar_adms
@@ -6,6 +6,8 @@ from arquivos.manipular_VendasPassagens import carregar_registros_passagens, sal
 from arquivos.ArvoreB_VendaPassagens import arvore
 from arquivos.manipular_Informacoes import carregar_valor, salvar_valor
 from arquivos.manipular_Reservas import carregar_reservas, salvar_reservas
+
+from arquivos.respostas import respostas
 
 app = Flask(__name__)  # cria a aplicação
 
@@ -309,9 +311,25 @@ def gerenciar_usuario():
     
     return render_template("gerenciar_usuario.html", usuarios=usuarios, usuario=usuario_selecionado, mensagem=mensagem)
 
+
+
 @app.route("/chat_bot")
-def chat_bot():
+def chat_page():
     return render_template("chat_bot.html")
+
+
+def get_resposta(msg):
+    msg = msg.lower().strip()
+    for keys, resposta in respostas.items():
+        if msg in keys:
+            return resposta
+    return "Desculpe, não entendi. Pode reformular?"
+
+@app.route("/chat", methods=["POST"])
+def chat_bot():
+    user_msg = request.get_json().get("message")
+    resposta = get_resposta(user_msg)
+    return jsonify({"reply": resposta})
 
 
 # Rodar a aplicação
