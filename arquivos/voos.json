@@ -8,7 +8,11 @@
         "Numero_de_assentos": 60,
         "Hora": "10:10",
         "Data": "20/11",
-        "Assentos_ocupados":[]
+        "Assentos_ocupados": [
+            "2",
+            "1",
+            "3"
+        ]
     },
     {
         "Codigo_do_voo": "4521",
@@ -19,7 +23,9 @@
         "Numero_de_assentos": 80,
         "Hora": "15:30",
         "Data": "22/11",
-        "Assentos_ocupados": ["16", "2", "23", "4","5"]
+        "Assentos_ocupados": [
+            "23"
+        ]
     },
     {
         "Codigo_do_voo": "7689",
@@ -30,7 +36,7 @@
         "Numero_de_assentos": 30,
         "Hora": "08:00",
         "Data": "25/11",
-        "Assentos_ocupados":["18", "2", "27", "4", "5"]
+        "Assentos_ocupados": []
     },
     {
         "Codigo_do_voo": "9987",
@@ -41,7 +47,7 @@
         "Numero_de_assentos": 90,
         "Hora": "12:45",
         "Data": "28/11",
-        "Assentos_ocupados":[]
+        "Assentos_ocupados": []
     },
     {
         "Codigo_do_voo": "1122",
@@ -52,6 +58,6 @@
         "Numero_de_assentos": 100,
         "Hora": "20:15",
         "Data": "30/11",
-        "Assentos_ocupados":[]
+        "Assentos_ocupados": []
     }
 ]

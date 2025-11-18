@@ -4,6 +4,8 @@ from arquivos.manipular_voos import carregar_voos, salvar_voos # chamando as fun
 from arquivos.manipular_adm import carregar_adms, salvar_adms
 from arquivos.manipular_VendasPassagens import carregar_registros_passagens, salvar_registros_passagens
 from arquivos.ArvoreB_VendaPassagens import arvore
+from arquivos.manipular_Informacoes import carregar_valor, salvar_valor
+from arquivos.manipular_Reservas import carregar_reservas, salvar_reservas
 
 app = Flask(__name__)  # cria a aplicação
 
@@ -13,6 +15,9 @@ app.secret_key = "123456"
 voos = carregar_voos()
 adms = carregar_adms()
 usuarios = carregar_usuarios()
+reservas = carregar_reservas()
+valor = carregar_valor()
+print(valor)
 
 
 # Definindo Rotas
@@ -48,6 +53,38 @@ def confirmarReserva(codigo, assento):
 
     return render_template("confirmarReserva.html", voo=voo, assento=assento)
 
+@app.route("/reservar_assento/<codigo>/<int:assento>", methods=["POST"])
+def reservar_assento(codigo, assento):
+    global valor  # necessário para alterar a variável global
+
+    voo = next((v for v in voos if str(v["Codigo_do_voo"]) == codigo), None)
+    if voo is None:
+        return "Voo não encontrado", 404
+
+    if str(assento) not in voo["Assentos_ocupados"]:
+        # Marca assento como ocupado
+        voo["Assentos_ocupados"].append(str(assento))
+        salvar_voos(voos)
+
+        # Incrementa o valor da passagem
+        valor += 1
+        salvar_valor(valor)  # salva no arquivo o novo valor
+
+        # Cria reserva
+        reserva = {
+            "codigo_passagem": valor,
+            "cpf": session.get("cpf"),
+            "codigo_voo": codigo,
+            "assento": str(assento)
+        }
+
+        # Adiciona e salva reserva
+        reservas.append(reserva)
+        salvar_reservas(reservas)
+
+    return "", 204  # não retorna conteúdo
+
+
 
 @app.route("/InicialAdm")   
 def editar():
@@ -66,6 +103,7 @@ def login_user():
         for usuario in usuarios:
             if usuario["email"] == email and usuario["senha"] == senha:
                 session["email"] = email  # guarda na sessão
+                session["cpf"] = usuario["cpf"] 
                 return redirect(url_for("homeUser")) 
             
         mensagem = "Email ou senha incorretos!"
@@ -135,7 +173,8 @@ def criar_voo():
             "Tipo_de_aeronave": tipo_aeronave,
             "Numero_de_assentos": int(assentos),
             "Hora": hora,
-            "Data": data
+            "Data": data,
+            "Assentos_ocupados": []
         }
 
         voos.append(novo_voo)

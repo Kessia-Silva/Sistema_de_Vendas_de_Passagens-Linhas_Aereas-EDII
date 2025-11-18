@@ -1,62 +1,8 @@
 [
     {
-        "codigo_passagem": 1001,
-        "cpf": "222",
-        "codigo_voo": "4521",
-        "assento": "16"
-    },
-    {
         "codigo_passagem": 1002,
-        "cpf": "222",
-        "codigo_voo": "7689",
-        "assento": "18"
-    },
-    {
-        "codigo_passagem": 1003,
-        "cpf": "111",
-        "codigo_voo": "4521",
-        "assento": "2"
-    },
-    {
-        "codigo_passagem": 1004,
-        "cpf": "111",
-        "codigo_voo": "7689",
-        "assento": "2"
-    },
-    {
-        "codigo_passagem": 1005,
-        "cpf": "222",
+        "cpf": "3900",
         "codigo_voo": "4521",
         "assento": "23"
-    },
-    {
-        "codigo_passagem": 1006,
-        "cpf": "333",
-        "codigo_voo": "7689",
-        "assento": "27"
-    },
-    {
-        "codigo_passagem": 1007,
-        "cpf": "444",
-        "codigo_voo": "4521",
-        "assento": "5" 
-    },
-    {
-        "codigo_passagem": 1008,
-        "cpf": "555",
-        "codigo_voo": "7689",
-        "assento": "4"
-    },
-    {
-        "codigo_passagem": 1009,
-        "cpf": "666",
-        "codigo_voo": "4521",
-        "assento": "4"
-    },
-    {
-        "codigo_passagem": 1010,
-        "cpf": "777",
-        "codigo_voo": "7689",
-        "assento": "5"
     }
 ]

@@ -377,12 +377,43 @@ tfoot {
     </div>
 
     <div>
-      <button class="button button--full" type="submit"><svg class="icon">
-          <use xlink:href="" />
-        </svg>Confirmar Pagamento</button>
-    </div>
+  <button id="confirmar" class="button button--full" type="button">
+    <svg class="icon">
+      <use xlink:href="" />
+    </svg>
+    Confirmar Pagamento
+  </button>
+</div>
+
+<div id="mensagem" style="display:none; color: green; margin-top: 10px;">
+  Reserva concluída!
+</div>
+
   </form>
 </div>
+
+<script>
+document.getElementById('confirmar').addEventListener('click', function() {
+    // Mostra a mensagem
+    document.getElementById('mensagem').style.display = 'block';
+
+    // Desabilita o botão para não clicar de novo
+    this.disabled = true;
+
+    // Chama a rota do Flask para registrar o assento
+    fetch(`/reservar_assento/{{ voo['Codigo_do_voo'] }}/{{ assento }}`, {
+        method: 'POST'
+    })
+    .then(response => {
+        if(response.ok) {
+            console.log('Assento registrado com sucesso');
+        } else {
+            console.log('Erro ao registrar assento');
+        }
+    });
+});
+</script>
+
 
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
 
