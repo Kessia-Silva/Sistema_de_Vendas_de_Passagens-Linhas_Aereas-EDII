@@ -16,6 +16,7 @@ class RegistroPassagem:
         )
 
 
+
 # Criar a árvore
 arvore = ArvoreB(ordem=4)
 
@@ -33,6 +34,27 @@ for d in lista_dicts:
 
     # Inserir na Árvore B
     arvore.inserir(registro)
+
+def reconstruir_arvore():
+    # 1. Criar a árvore vazia
+    arvore = ArvoreB(ordem=4)
+
+    # 2. Carregar dicionários do arquivo
+    lista_dicts = carregar_registros_passagens()
+
+    # 3. Converter cada dicionário em objeto e inserir na árvore
+    for d in lista_dicts:
+        registro = RegistroPassagem(
+            d["codigo_passagem"],
+            d["cpf"],
+            d["codigo_voo"],
+            d["assento"]
+        )
+        arvore.inserir(registro)
+
+    return arvore
+
+
 
 
 

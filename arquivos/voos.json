@@ -9,7 +9,8 @@
         "Hora": "10:10",
         "Data": "20/11",
         "Assentos_ocupados": [
-            "55"
+            "55",
+            "6"
         ]
     },
     {
@@ -32,7 +33,9 @@
         "Numero_de_assentos": 30,
         "Hora": "08:00",
         "Data": "25/11",
-        "Assentos_ocupados": []
+        "Assentos_ocupados": [
+            "1"
+        ]
     },
     {
         "Codigo_do_voo": "9987",

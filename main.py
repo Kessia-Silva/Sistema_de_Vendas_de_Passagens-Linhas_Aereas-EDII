@@ -3,10 +3,11 @@ from arquivos.manipular_usuarios import carregar_usuarios, salvar_usuarios # cha
 from arquivos.manipular_voos import carregar_voos, salvar_voos # chamando as funções para manipular o arquivo
 from arquivos.manipular_adm import carregar_adms, salvar_adms
 from arquivos.manipular_VendasPassagens import carregar_registros_passagens, salvar_registros_passagens
-from arquivos.ArvoreB_VendaPassagens import arvore
+from arquivos.ArvoreB_VendaPassagens import arvore, reconstruir_arvore
 from arquivos.manipular_Informacoes import carregar_valor, salvar_valor
 from arquivos.manipular_Reservas import carregar_reservas, salvar_reservas
 from arquivos.ArvoreB_VendaPassagens import RegistroPassagem
+
 
 from arquivos.respostas import respostas
 
@@ -117,6 +118,41 @@ def minhas_reservas():
                 voos_encontrados.append(voo)
 
     return render_template("minhas_reservas.html", reservas_usuario = reservas, voos_encontrados = voos_encontrados)
+
+@app.route("/cancelar_reserva/<int:codigo_passagem>")
+def cancelar_reserva(codigo_passagem):
+    cpf = session.get("cpf")
+    if not cpf:
+        return redirect(url_for("login_user"))
+
+    # 1. Buscar a reserva na árvore B
+    reserva = arvore.buscar(codigo_passagem)
+
+    if not reserva:
+        return redirect(url_for("minhas_reservas"))
+
+    # 2. Liberar o assento no voo
+    codigo_voo = reserva.codigo_voo
+    assento = reserva.assento
+
+    voo = next((v for v in voos if v["Codigo_do_voo"] == codigo_voo), None)
+
+    if voo and assento in voo["Assentos_ocupados"]:
+        voo["Assentos_ocupados"].remove(assento)
+
+    # 3. Remover do arquivo reservas
+    reservas = carregar_reservas()
+
+    reservas = [
+        r for r in reservas 
+        if r.get("codigo_passagem") != codigo_passagem
+    ]
+
+    salvar_reservas(reservas)
+    arvore = reconstruir_arvore()
+
+    return redirect(url_for("minhas_reservas"))
+
 
 
 
@@ -278,6 +314,7 @@ def remover_voo():
             voos = [v for v in voos if v["Codigo_do_voo"] != codigo]
             mensagem = f"Voo {codigo} removido com sucesso!"
             salvar_voos(voos)
+            
 
     return render_template("remover_voo.html", voos=voos, voo=voo, mensagem=mensagem)
 

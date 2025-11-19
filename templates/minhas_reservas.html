@@ -64,7 +64,7 @@
 
         <!-- Botão cancelar -->
         <td>
-          <a href=""
+          <a href="{{ url_for('cancelar_reserva', codigo_passagem=reservas_usuario[i].codigo_passagem) }}"
              class="btn btn-danger btn-sm">
             Cancelar Reserva
           </a>
