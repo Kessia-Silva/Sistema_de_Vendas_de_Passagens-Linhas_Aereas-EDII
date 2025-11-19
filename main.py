@@ -6,6 +6,7 @@ from arquivos.manipular_VendasPassagens import carregar_registros_passagens, sal
 from arquivos.ArvoreB_VendaPassagens import arvore
 from arquivos.manipular_Informacoes import carregar_valor, salvar_valor
 from arquivos.manipular_Reservas import carregar_reservas, salvar_reservas
+from arquivos.ArvoreB_VendaPassagens import RegistroPassagem
 
 from arquivos.respostas import respostas
 
@@ -73,18 +74,49 @@ def reservar_assento(codigo, assento):
         salvar_valor(valor)  # salva no arquivo o novo valor
 
         # Cria reserva
-        reserva = {
-            "codigo_passagem": valor,
-            "cpf": session.get("cpf"),
-            "codigo_voo": codigo,
-            "assento": str(assento)
-        }
+        registro = RegistroPassagem(
+           codigo_passagem=valor,
+           cpf=session.get("cpf"),
+           codigo_voo= codigo,
+           assento=str(assento)
+         )
 
-        # Adiciona e salva reserva
-        reservas.append(reserva)
+        arvore.inserir(registro)
+
+        reservas.append({
+         "codigo_passagem": registro.codigo_passagem,
+         "cpf": registro.cpf,
+         "codigo_voo": registro.codigo_voo,
+         "assento": registro.assento
+         })
         salvar_reservas(reservas)
 
     return "", 204  # não retorna conteúdo
+
+@app.route("/minhas_reservas")
+def minhas_reservas():
+    cpf = session.get("cpf")
+    if not cpf:
+        return redirect(url_for("login_user"))
+
+    reservas = []
+    voos_encontrados = []
+
+    # percorre todos os objetos da árvore:
+    registros = arvore.listar_chaves()
+    if not registros:
+        print("lista vazia")
+    
+    for registro in registros:
+        reserva = arvore.buscar(registro.codigo_passagem)
+        if reserva and reserva.cpf == cpf:
+            reservas.append(reserva)
+
+            voo = next((v for v in voos if v["Codigo_do_voo"] == reserva.codigo_voo), None)
+            if voo:
+                voos_encontrados.append(voo)
+
+    return render_template("minhas_reservas.html", reservas_usuario = reservas, voos_encontrados = voos_encontrados)
 
 
 

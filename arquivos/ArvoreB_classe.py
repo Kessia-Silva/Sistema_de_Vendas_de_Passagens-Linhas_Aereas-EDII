@@ -154,4 +154,34 @@ class ArvoreB:
 
      # Se não for folha → desce para o filho correto
      return self.buscar(codigo_passagem, no.filhos[i])
+    
+    
+    # ----------------------------------------
+    # Listar as chaves 
+    # ----------------------------------------   
+    def listar_chaves(self, no=None, lista=None):
+     if lista is None:
+        lista = []
+     if no is None:
+        no = self.raiz
 
+    # Percorre todos os nós em ordem
+     i = 0
+     while i < len(no.chaves):
+        # Se não for folha → desce no filho antes da chave
+        if not no.eh_folha:
+            self.listar_chaves(no.filhos[i], lista)
+
+        lista.append(no.chaves[i])  # adiciona o objeto RegistroPassagem
+        i += 1
+
+    # Último filho
+     if not no.eh_folha:
+        self.listar_chaves(no.filhos[i], lista)
+
+     return lista
+
+    
+    
+
+ 
