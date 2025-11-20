@@ -58,5 +58,27 @@
         "Hora": "20:15",
         "Data": "30/11",
         "Assentos_ocupados": []
+    },
+    {
+        "Codigo_do_voo": "1234",
+        "Origem": "Coreia",
+        "Destino": "Estados Unidos",
+        "Preco_da_passagem": 1400.0,
+        "Tipo_de_aeronave": "Boeing 747",
+        "Numero_de_assentos": 1,
+        "Hora": "20:59",
+        "Data": "2025-12-18",
+        "Assentos_ocupados": []
+    },
+    {
+        "Codigo_do_voo": "1745",
+        "Origem": "Japão",
+        "Destino": "Angola",
+        "Preco_da_passagem": 1000.0,
+        "Tipo_de_aeronave": "Boeing 747",
+        "Numero_de_assentos": 1,
+        "Hora": "21:00",
+        "Data": "2026-01-06",
+        "Assentos_ocupados": []
     }
 ]

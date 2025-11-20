@@ -11,6 +11,14 @@ from arquivos.ArvoreB_VendaPassagens import RegistroPassagem
 
 from arquivos.respostas import respostas
 
+from arquivos.respostas import respostas
+import os
+from igraph import Graph, plot
+import folium
+from arquivos.manipular_coordenadas import carregar_coordenadas
+
+coordenadas_aeroportos = carregar_coordenadas()
+
 app = Flask(__name__)  # cria a aplicação
 
 
@@ -399,6 +407,167 @@ def chat_bot():
     user_msg = request.get_json().get("message")
     resposta = get_resposta(user_msg)
     return jsonify({"reply": resposta})
+
+
+
+
+
+
+
+
+
+def criar_grafo_voos(voos):
+    g = Graph(directed=True)
+    aeroportos = set()
+    
+    for voo in voos:
+        origem = voo.get("Origem")
+        destino = voo.get("Destino")
+        if origem:
+            aeroportos.add(origem)
+        if destino:
+            aeroportos.add(destino)
+    
+    g.add_vertices(list(aeroportos))
+    indice = {nome: i for i, nome in enumerate(g.vs["name"])}
+    
+    for voo in voos:
+        origem = voo.get("Origem")
+        destino = voo.get("Destino")
+        if origem and destino:
+            g.add_edge(indice[origem], indice[destino])
+    
+    return g
+
+def criar_imagem_grafo(voos):
+    g = criar_grafo_voos(voos)
+    
+    pasta = os.path.join("static", "img")
+    os.makedirs(pasta, exist_ok=True)
+    caminho_arquivo = os.path.join(pasta, "grafo.png")
+    
+    tamanho_vertices = 90  # tamanho fixo para todos os vértices
+    cores = ["#4CAF50", "#2196F3", "#FFC107", "#E91E63", "#9C27B0", "#FF5722", "#0C0F36", "#360C0C", "#BE1873"]
+    cor_vertices = [cores[i % len(cores)] for i in range(len(g.vs))]
+    
+    layout = g.layout("kk")
+    
+    visual_style = {
+        "vertex_size": tamanho_vertices,
+        "vertex_color": cor_vertices,
+        "vertex_label": g.vs["name"],  # nome do país dentro da bola
+        "vertex_label_color": "white",
+        "vertex_label_size": 12,
+        "vertex_label_font": "Arial",
+        "vertex_label_dist": 0,
+        "edge_color": "blue",
+        "edge_width": 2,
+        "edge_arrow_size": 0.5,
+        "edge_arrow_width": 1.5,
+        "layout": layout,
+        "bbox": (1000, 800),
+        "margin": 50
+    }
+    
+    plot(g, target=caminho_arquivo, **visual_style)
+    
+    return "img/grafo.png"
+
+def buscar_conexoes(origem, destino):
+    g = criar_grafo_voos(voos)
+    try:
+        caminhos = g.get_shortest_paths(origem, to=destino, mode="OUT", output="vpath")
+    except:
+        return None
+
+    if not caminhos or not caminhos[0]:
+        return None
+
+    return [g.vs[i]["name"] for i in caminhos[0]]
+
+
+
+@app.route("/grafico_voos")
+def grafico_voos():
+    imagem_grafo = criar_imagem_grafo(voos)
+    return render_template("grafico_voos.html", imagem_grafo=imagem_grafo)
+
+
+
+
+@app.route("/simular_conexoes", methods=["GET", "POST"])
+def simular_conexoes():
+    aeroportos = sorted({v.get("Origem") for v in voos if v.get("Origem")} |
+                        {v.get("Destino") for v in voos if v.get("Destino")})
+
+    caminho = None
+    origem = None
+    destino = None
+
+    if request.method == "POST":
+        origem = request.form.get("origem")
+        destino = request.form.get("destino")
+        caminho = buscar_conexoes(origem, destino)
+
+    return render_template(
+        "simular_conexoes.html",
+        aeroportos=aeroportos,
+        origem=origem,
+        destino=destino,
+        caminho=caminho
+    )
+
+
+
+
+
+
+
+#-----------Mapa dos paises----------
+def criar_mapa_voos(voos, coordenadas):
+    mapa = folium.Map(location=[20, 0], zoom_start=2)
+    aeroportos_adicionados = set()
+
+    for voo in voos:
+        origem = voo.get("Origem")
+        destino = voo.get("Destino")
+        codigo = voo.get("Codigo_do_voo")
+        hora = voo.get("Hora")
+        data = voo.get("Data")
+        preco = voo.get("Preco_da_passagem")
+
+        # Marcadores
+        for aeroporto, cor in [(origem, "green"), (destino, "red")]:
+            if aeroporto in coordenadas and aeroporto not in aeroportos_adicionados:
+                folium.Marker(
+                    location=coordenadas[aeroporto],
+                    popup=f"Aeroporto: {aeroporto}",
+                    icon=folium.Icon(color=cor, icon="plane")
+                ).add_to(mapa)
+                aeroportos_adicionados.add(aeroporto)
+
+        # Linha entre aeroportos
+        if origem in coordenadas and destino in coordenadas:
+            folium.PolyLine(
+                locations=[coordenadas[origem], coordenadas[destino]],
+                color="blue",
+                weight=2,
+                opacity=0.7,
+                popup=f"Voo {codigo} | Data: {data} | Hora: {hora} | Preço: {preco}"
+            ).add_to(mapa)
+
+    mapa.save("templates/mapa_grafico_voos.html")
+
+
+@app.route("/mapa_grafico_voos")
+def mapa_grafico_voos():
+    criar_mapa_voos(voos, coordenadas_aeroportos)
+    return render_template("mapa_grafico_voos.html")
+
+
+
+
+
 
 
 # Rodar a aplicação

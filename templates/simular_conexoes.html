@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Linhas Aéreas </title>
+  <link rel="icon" href="static/img/IconAviao.ico" type="image/x-icon">
+
+  <link rel="stylesheet" href="static/css/padrao.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="Navbar d-flex justify-content-between align-items-center p-3">
+    <div class="logo-container d-flex align-items-center">
+        <h1 class="logo-text">
+            <a> Linhas Aéreas EDII </a>
+        </h1>
+        <img src="static/img/bandeiraDoBrasil.png" alt="Mapa Brasil" height="40">
+    </div>
+
+    <div class="d-flex align-items-center" style="gap: 3px;">
+        <a href="/homeUser" title="Sair">
+            <i class="fas fa-right-from-bracket fa-lg" style="color: white;"></i>
+        </a>
+    </div>
+</header>
+
+<!-- CONTEÚDO CENTRAL -->
+<div class="container mt-5">
+
+    <h2 class="text-center mb-4">Simular Conexão Entre Países</h2>
+
+    <!-- FORMULÁRIO -->
+    <form method="POST" class="border p-4 rounded shadow-sm bg-light">
+
+        <div class="row">
+            <div class="col-md-6">
+                <label class="form-label">Origem:</label>
+                <select name="origem" class="form-select" required>
+                    <option value="">Selecione</option>
+                    {% for a in aeroportos %}
+                    <option value="{{ a }}" {% if origem == a %}selected{% endif %}>{{ a }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Destino:</label>
+                <select name="destino" class="form-select" required>
+                    <option value="">Selecione</option>
+                    {% for a in aeroportos %}
+                    <option value="{{ a }}" {% if destino == a %}selected{% endif %}>{{ a }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3 w-100">Buscar</button>
+    </form>
+
+    <!-- RESULTADO -->
+    {% if origem and destino %}
+    <div class="mt-4 p-3 bg-white border rounded shadow-sm">
+        <p><strong>Origem:</strong> {{ origem }} | <strong>Destino:</strong> {{ destino }}</p>
+
+        {% if caminho %}
+            <p><strong>Caminho encontrado:</strong> {{ caminho | join(" → ") }}</p>
+        {% else %}
+            <p class="text-danger"><strong>Nenhuma conexão encontrada.</strong></p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>
