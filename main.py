@@ -447,7 +447,9 @@ def criar_imagem_grafo(voos):
     caminho_arquivo = os.path.join(pasta, "grafo.png")
     
     tamanho_vertices = 95  # tamanho fixo para todos os vértices
-    cores = ["#4CAF50", "#2196F3", "#FFC107", "#E91E63", "#9C27B0", "#FF5722", "#0C0F36", "#360C0C", "#BE1873"]
+    cores = ["#4CAF50", "#2196F3", "#FFC107", "#E91E63", "#9C27B0",
+             "#FF5722", "#0C0F36", "#360C0C", "#BE1873", "#43768A",
+             "#43768A", "#584657", "#584657", "#138F5F", "#495025"]
     cor_vertices = [cores[i % len(cores)] for i in range(len(g.vs))]
     
     layout = g.layout("kk")
