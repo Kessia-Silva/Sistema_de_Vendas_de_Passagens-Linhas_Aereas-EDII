@@ -23,7 +23,7 @@
     </div>
 
 
-    <script>
+<script>
 const messageInput = document.querySelector(".message-input");
 const sendButton = document.querySelector(".send-button");
 const messageList = document.querySelector(".message-list");
@@ -37,6 +37,25 @@ function addMessage(text, sender) {
     messageList.scrollTop = messageList.scrollHeight;
 }
 
+// Função para mostrar "digitando..." com três pontos animados
+function showTypingIndicator() {
+    const li = document.createElement("li");
+    li.className = "bot typing";
+    messageList.appendChild(li);
+
+    let dots = "";
+    let count = 0;
+
+    const interval = setInterval(() => {
+        dots = ".".repeat((count % 3) + 1);
+        li.textContent = "Digitando" + dots;
+        messageList.scrollTop = messageList.scrollHeight;
+        count++;
+    }, 300); // troca os pontos a cada 300ms
+
+    return { element: li, interval: interval };
+}
+
 // Enviar mensagem para o Flask
 async function sendMessage() {
     const msg = messageInput.value.trim();
@@ -45,6 +64,9 @@ async function sendMessage() {
     addMessage(msg, "user");
     messageInput.value = "";
 
+    // Mostra o indicador de digitação
+    const typing = showTypingIndicator();
+
     try {
         const response = await fetch("/chat", {
             method: "POST",
@@ -52,16 +74,22 @@ async function sendMessage() {
             body: JSON.stringify({message: msg})
         });
         const data = await response.json();
-        addMessage(data.reply, "bot");
+
+        // Mantém o "digitando..." por 1 segundo
+        setTimeout(() => {
+            clearInterval(typing.interval);
+            typing.element.remove();
+            addMessage(data.reply, "bot");
+        }, 1000); // 1 segundo de animação
     } catch (error) {
+        clearInterval(typing.interval);
+        typing.element.remove();
         addMessage("Erro ao conectar com o servidor.", "bot");
     }
 }
 
-// Enviar ao clicar no botão
+// Eventos de envio
 sendButton.addEventListener("click", sendMessage);
-
-// Enviar ao pressionar Enter
 messageInput.addEventListener("keypress", function(e) {
     if (e.key === "Enter") sendMessage();
 });

@@ -92,3 +92,8 @@ li.bot {
   max-width: 100%;
   align-self: flex-start;
 }
+
+li.bot.typing {
+    font-style: italic;
+    color: black;
+}
