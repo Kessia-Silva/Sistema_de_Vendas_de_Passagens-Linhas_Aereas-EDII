@@ -446,7 +446,7 @@ def criar_imagem_grafo(voos):
     os.makedirs(pasta, exist_ok=True)
     caminho_arquivo = os.path.join(pasta, "grafo.png")
     
-    tamanho_vertices = 90  # tamanho fixo para todos os vértices
+    tamanho_vertices = 95  # tamanho fixo para todos os vértices
     cores = ["#4CAF50", "#2196F3", "#FFC107", "#E91E63", "#9C27B0", "#FF5722", "#0C0F36", "#360C0C", "#BE1873"]
     cor_vertices = [cores[i % len(cores)] for i in range(len(g.vs))]
     
@@ -457,7 +457,7 @@ def criar_imagem_grafo(voos):
         "vertex_color": cor_vertices,
         "vertex_label": g.vs["name"],  # nome do país dentro da bola
         "vertex_label_color": "white",
-        "vertex_label_size": 12,
+        "vertex_label_size": 13, #tamanho da letra 
         "vertex_label_font": "Arial",
         "vertex_label_dist": 0,
         "edge_color": "blue",
