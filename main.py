@@ -467,7 +467,7 @@ def criar_imagem_grafo(voos):
         "edge_arrow_size": 0.5,
         "edge_arrow_width": 1.5,
         "layout": layout,
-        "bbox": (1000, 800),
+        "bbox": (1100, 800),
         "margin": 50
     }
     
