@@ -407,6 +407,17 @@ def get_resposta(msg):
             return resposta
     return "Desculpe, não entendi. Pode reformular?"
 
+@app.route("/voltar_chat")
+def voltar_chat():
+    # Se for usuário comum
+    if session.get("cpf"):
+        return redirect(url_for("homeUser"))
+    
+    # Se não estiver logado (visitante)
+    return redirect(url_for("home"))
+
+
+
 @app.route("/chat", methods=["POST"])
 def chat_bot():
     user_msg = request.get_json().get("message")

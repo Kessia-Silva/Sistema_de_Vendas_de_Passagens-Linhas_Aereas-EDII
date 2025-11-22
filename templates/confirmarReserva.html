@@ -313,11 +313,11 @@ tfoot {
       <h2>Informações do Voo</h2>
 
       <div class="card">
-          <p><strong>Origem:</strong> {{ voo.Origem }}</p>
-            <p><strong>Destino:</strong> {{ voo.Destino }}</p>
-            <p><strong>Data:</strong> {{ voo.Data }} — {{ voo.Hora }}</p>
-            <p><strong>Hora:</strong> {{ voo.Hora }}</p>
-            <p><strong>Assento:</strong> {{ assento }}</p>
+          <p><strong>Origem:</strong> {{ voo.Origem }} &nbsp;&nbsp;&nbsp;&nbsp;
+<strong>Destino:</strong> {{ voo.Destino }}</p>
+
+            <p><strong>Data:</strong> {{ voo.Data }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Hora:</strong> {{ voo.Hora }}</p>
+            <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assento:</strong> {{ assento }}</p>
       </div>
     </div>
 
@@ -341,7 +341,7 @@ tfoot {
 
         <div class="form__radio">
          <label for="pix">
-          <img src="static\img\Pix.png" alt="PIX" class="icon" />
+          <img src="{{ url_for('static', filename='img/Pix.png') }}" alt="PIX" class="icon">
           Pix
          </label>
          <input id="pix" name="payment-method" type="radio" />
@@ -352,23 +352,11 @@ tfoot {
     </fieldset>
 
     <div>
-      <h2>Passagem</h2>
-
       <table>
-        <tbody>
-          <tr>
-            <td>Desconto de Black Friday</td>
-            <td align="right">-$58.89</td>
-          </tr>
-          <tr>
-            <td>Nome do Voo e Assento</td>
-            <td align="right"> ${{ voo.Preco_da_passagem }}</td>
-          </tr>
-        </tbody>
         <tfoot>
           <tr>
             <td>Total</td>
-            <td align="right">{{ voo.Preco_da_passagem + -58.89}}</td>
+            <td align="right">{{ voo.Preco_da_passagem }}</td>
           </tr>
         </tfoot>
       </table>
