@@ -107,7 +107,21 @@ def reservar_assento(codigo, assento):
         # Atualiza o cliente: adiciona reserva, data e milhas
         cliente.reservas.append(registro.codigo_passagem)
         cliente.datas.append(voo["Data"]) 
-        cliente.milhas += voo["Milhas_percorridas"]  # soma milhas do voo
+        
+# ------ Recalcular milhas a partir das reservas ativas --------
+        total_milhas = 0
+        arvore_passagens = reconstruir_arvore()  # garante que está atualizada
+        for cod_passagem in cliente.reservas:
+           reserva_temp = arvore_passagens.buscar(cod_passagem)
+           if reserva_temp:
+               # Pega milhas do voo correspondente
+               voo_temp = next((v for v in voos if str(v["Codigo_do_voo"]) == reserva_temp.codigo_voo), None)
+               if voo_temp:
+                  total_milhas += voo_temp["Milhas_percorridas"]
+
+        cliente.milhas = total_milhas
+        session['milhas'] = cliente.milhas  # atualiza imediatamente na sessão
+
 
         # Salva a lista de clientes
         lista_clientes = arvore_clientes.listar_chaves()
@@ -132,6 +146,9 @@ def minhas_reservas():
 
     # Reconstruir a árvore de clientes
     arvore_clientes = reconstruir_arvore_clientes()
+# mudança minha
+    arvore_passagens = reconstruir_arvore()
+
     cliente = arvore_clientes.buscar(cpf)
 
     if not cliente:
@@ -140,7 +157,7 @@ def minhas_reservas():
     reservas_usuarios = []
     voos_encontrados = []
 
-    # Agora cliente.reservas já é a lista de códigos de reserva dele
+   
     arvore_passagens = reconstruir_arvore()
     for codigo_passagem in cliente.reservas:
         reserva = arvore_passagens.buscar(codigo_passagem)
@@ -154,7 +171,9 @@ def minhas_reservas():
     return render_template(
         "minhas_reservas.html",
         reservas_usuario=reservas_usuarios,
-        voos_encontrados=voos_encontrados
+        voos_encontrados=voos_encontrados,
+ # eu
+        cliente=cliente
     )
 
 def clientes_para_dict(clientes_objetos):
@@ -200,10 +219,24 @@ def cancelar_reserva(codigo_passagem):
         index = cliente.reservas.index(codigo_passagem)
         cliente.reservas.pop(index)
         cliente.datas.pop(index)  # remove também a data correspondente
-        cliente.milhas -= voo["Milhas_percorridas"] 
+        # Subtrair milhas da reserva cancelada
+
+    total_milhas = 0
+    arvore_passagens = reconstruir_arvore()  # garante que está atualizada
+    for cod_passagem in cliente.reservas:  # agora só percorre reservas ativas
+        reserva_temp = arvore_passagens.buscar(cod_passagem)
+        if reserva_temp:
+             voo_temp = next((v for v in voos if str(v["Codigo_do_voo"]) == reserva_temp.codigo_voo), None)
+             if voo_temp:
+                total_milhas += voo_temp["Milhas_percorridas"]
+
+    cliente.milhas = total_milhas
+    session['milhas'] = cliente.milhas  # atualiza na sessão
+
+        
         # Salvar clientes atualizados
-        clientes_dicts = clientes_para_dict(arvore_clientes.listar_chaves())
-        salvar_clientes(clientes_dicts)
+    clientes_dicts = clientes_para_dict(arvore_clientes.listar_chaves())
+    salvar_clientes(clientes_dicts)
 
 
     # 4. Remover da lista global de reservas
@@ -249,7 +282,8 @@ def homeUser():
     cpf = session.get("cpf")
     if not cpf:
         return redirect(url_for("login_user"))
-
+    
+    arvore_clientes = reconstruir_arvore_clientes()
     cliente = arvore_clientes.buscar(cpf)
     email = session.get("email")
     return render_template("homeUser.html", cliente=cliente, email=email)
@@ -298,6 +332,7 @@ def criar_voo():
         assentos = request.form.get("Numero_de_assentos")
         hora = request.form.get("Hora")
         data = request.form.get("Data")
+        milhas = request.form["Milhas_percorridas"]
 
         # Verifica se o código do voo já existe
         for voo in voos:
@@ -315,9 +350,9 @@ def criar_voo():
             "Numero_de_assentos": int(assentos),
             "Hora": hora,
             "Data": data,
-            "Assentos_ocupados": []
+            "Assentos_ocupados": [],
+            "Milhas_percorridas": int(milhas)
         }
-
         voos.append(novo_voo)
         salvar_voos(voos)
         mensagem = "Voo cadastrado com sucesso!"
