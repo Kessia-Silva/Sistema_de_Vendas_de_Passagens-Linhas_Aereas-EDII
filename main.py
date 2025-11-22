@@ -104,32 +104,38 @@ def reservar_assento(codigo, assento):
 #-----------Rotas para Cancelar/Ve os Voos reservados ----------
 @app.route("/minhas_reservas")
 def minhas_reservas():
+    arvore = reconstruir_arvore()
     cpf = session.get("cpf")
     if not cpf:
         return redirect(url_for("login_user"))
 
-    reservas = []
+    reservas_usuarios = []
     voos_encontrados = []
 
-    # percorre todos os objetos da árvore:
     registros = arvore.listar_chaves()
     if not registros:
         print("lista vazia")
-    
+
     for registro in registros:
         reserva = arvore.buscar(registro.codigo_passagem)
         if reserva and reserva.cpf == cpf:
-            reservas.append(reserva)
+            reservas_usuarios.append(reserva)
 
             voo = next((v for v in voos if v["Codigo_do_voo"] == reserva.codigo_voo), None)
             if voo:
                 voos_encontrados.append(voo)
 
-    return render_template("minhas_reservas.html", reservas_usuario = reservas, voos_encontrados = voos_encontrados)
+    return render_template(
+        "minhas_reservas.html",
+        reservas_usuario=reservas_usuarios,
+        voos_encontrados=voos_encontrados
+    )
+
 
 @app.route("/cancelar_reserva/<int:codigo_passagem>")
 def cancelar_reserva(codigo_passagem):
-    global arvore
+    global reservas
+    arvore = reconstruir_arvore()
     cpf = session.get("cpf")
     if not cpf:
         return redirect(url_for("login_user"))
@@ -152,7 +158,6 @@ def cancelar_reserva(codigo_passagem):
     salvar_voos(voos)
 
     # 3. Remover do arquivo reservas
-    reservas = carregar_reservas()
 
     reservas = [
         r for r in reservas 
@@ -160,7 +165,6 @@ def cancelar_reserva(codigo_passagem):
     ]
 
     salvar_reservas(reservas)
-    arvore = reconstruir_arvore()
 
     return redirect(url_for("minhas_reservas"))
 
