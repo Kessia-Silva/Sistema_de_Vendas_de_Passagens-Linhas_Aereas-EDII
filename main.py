@@ -7,7 +7,7 @@ from arquivos.ManipulandoArquivos.manipular_Informacoes import carregar_valor, s
 from arquivos.ManipulandoArquivos.manipular_Reservas import carregar_reservas, salvar_reservas #  chamando as funções para manipular o arquivo de reservas 
 from arquivos.Classes.ClasseReserva import RegistroPassagem # Importando classe de Reserva
 from arquivos.respostas import respostas # Importando o arquivo de respostas do ChatBot
-from arquivos.Arvores.ArvoreB_RegistrarClientes import arvore_clientes 
+from arquivos.Arvores.ArvoreB_RegistrarClientes import arvore_clientes, reconstruir_arvore_clientes
 from arquivos.ManipulandoArquivos.manipularClientes import salvar_clientes
 
 import os
@@ -126,21 +126,28 @@ def reservar_assento(codigo, assento):
 #-----------Rotas para Cancelar/Ve os Voos reservados ----------
 @app.route("/minhas_reservas")
 def minhas_reservas():
-    arvore = reconstruir_arvore()
+    cpf = session.get("cpf")
+    if not cpf:
+        return redirect(url_for("login_user"))
+
+    # Reconstruir a árvore de clientes
+    arvore_clientes = reconstruir_arvore_clientes()
+    cliente = arvore_clientes.buscar(cpf)
+
+    if not cliente:
+        return redirect(url_for("login_user"))
 
     reservas_usuarios = []
     voos_encontrados = []
 
-    registros = arvore.listar_chaves()
-    if not registros:
-        print("lista vazia")
-
-    for registro in registros:
-        reserva = arvore.buscar(registro.codigo_passagem)
-        if reserva and reserva.cpf == cpf:
+    # Agora cliente.reservas já é a lista de códigos de reserva dele
+    arvore_passagens = reconstruir_arvore()
+    for codigo_passagem in cliente.reservas:
+        reserva = arvore_passagens.buscar(codigo_passagem)
+        if reserva:
             reservas_usuarios.append(reserva)
 
-            voo = next((v for v in voos if v["Codigo_do_voo"] == reserva.codigo_voo), None)
+            voo = next((v for v in voos if str(v["Codigo_do_voo"]) == reserva.codigo_voo), None)
             if voo:
                 voos_encontrados.append(voo)
 
@@ -149,6 +156,7 @@ def minhas_reservas():
         reservas_usuario=reservas_usuarios,
         voos_encontrados=voos_encontrados
     )
+
 
 
 @app.route("/cancelar_reserva/<int:codigo_passagem>")
