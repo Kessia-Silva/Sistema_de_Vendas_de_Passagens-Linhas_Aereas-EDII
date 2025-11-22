@@ -129,6 +129,7 @@ def minhas_reservas():
 
 @app.route("/cancelar_reserva/<int:codigo_passagem>")
 def cancelar_reserva(codigo_passagem):
+    global arvore
     cpf = session.get("cpf")
     if not cpf:
         return redirect(url_for("login_user"))
@@ -147,6 +148,8 @@ def cancelar_reserva(codigo_passagem):
 
     if voo and assento in voo["Assentos_ocupados"]:
         voo["Assentos_ocupados"].remove(assento)
+
+    salvar_voos(voos)
 
     # 3. Remover do arquivo reservas
     reservas = carregar_reservas()
