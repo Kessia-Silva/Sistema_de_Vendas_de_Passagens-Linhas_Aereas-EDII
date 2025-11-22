@@ -65,9 +65,10 @@
         <!-- Botão cancelar -->
         <td>
           <a href="{{ url_for('cancelar_reserva', codigo_passagem=reservas_usuario[i].codigo_passagem) }}"
-             class="btn btn-danger btn-sm">
-            Cancelar Reserva
-          </a>
+   class="btn btn-danger btn-sm btn-cancelar">
+  Cancelar Reserva
+</a>
+
         </td>
       </tr>
       {% endfor %}
@@ -83,5 +84,52 @@
     
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Modal de Confirmação -->
+<div class="modal fade" id="modalCancelado" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Reserva Cancelada</h5>
+      </div>
+
+      <div class="modal-body text-center">
+        <p>A reserva foi cancelada com sucesso.</p>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-ok" class="btn btn-primary w-100">OK</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const botoesCancelar = document.querySelectorAll(".btn-cancelar");
+
+    botoesCancelar.forEach(botao => {
+        botao.addEventListener("click", function(event) {
+            event.preventDefault(); // impede ir direto pra rota
+
+            const urlCancelar = this.getAttribute("href");
+
+            // Mostra o modal
+            const modal = new bootstrap.Modal(document.getElementById('modalCancelado'));
+            modal.show();
+
+            // Quando clicar em OK
+            document.getElementById("btn-ok").onclick = function() {
+                // Chama a rota REAL que cancela
+                fetch(urlCancelar).then(() => {
+                    // Depois manda para homeUser
+                    window.location.href = "/homeUser";
+                });
+            };
+        });
+    });
+});
+</script>
+
   </body>
 </html>

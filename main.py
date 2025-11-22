@@ -20,6 +20,7 @@ from arquivos.manipular_coordenadas import carregar_coordenadas
 coordenadas_aeroportos = carregar_coordenadas()
 
 app = Flask(__name__)  # cria a aplicação
+arvore.imprimir()
 
 
 app.secret_key = "123456"
@@ -29,7 +30,6 @@ adms = carregar_adms()
 usuarios = carregar_usuarios()
 reservas = carregar_reservas()
 valor = carregar_valor()
-print(valor)
 
 
 # Definindo Rotas
