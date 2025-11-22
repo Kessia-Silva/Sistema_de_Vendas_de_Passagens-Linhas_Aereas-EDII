@@ -1,6 +1,6 @@
-from arquivos.manipular_Reservas import carregar_reservas
-from arquivos.ArvoreB_classe import ArvoreB
-from arquivos.ClasseReserva import RegistroPassagem
+from arquivos.ManipulandoArquivos.manipular_Reservas import carregar_reservas
+from arquivos.Arvores.ArvoreB_Passagens_classe import ArvoreB
+from arquivos.Classes.ClasseReserva import RegistroPassagem
 
 def reconstruir_arvore():
     # 1. Criar a árvore vazia

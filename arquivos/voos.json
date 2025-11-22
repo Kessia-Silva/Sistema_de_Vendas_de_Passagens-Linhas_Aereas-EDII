@@ -19,7 +19,9 @@
         "Numero_de_assentos": 80,
         "Hora": "15:30",
         "Data": "22/11",
-        "Assentos_ocupados": []
+        "Assentos_ocupados": [
+            "3"
+        ]
     },
     {
         "Codigo_do_voo": "7689",

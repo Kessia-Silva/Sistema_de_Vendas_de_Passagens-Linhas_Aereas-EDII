@@ -1,0 +1,51 @@
+[
+    {
+        "cpf": "11111111111",
+        "nome": "larissa",
+        "reservas": [],
+        "datas": [],
+        "milhas": 0
+    },
+    {
+        "cpf": "22222222222",
+        "nome": "antonela",
+        "reservas": [],
+        "datas": [],
+        "milhas": 0
+    },
+    {
+        "cpf": "33333333333",
+        "nome": "rafael",
+        "reservas": [],
+        "datas": [],
+        "milhas": 0
+    },
+    {
+        "cpf": "44444444444",
+        "nome": "iuri",
+        "reservas": [],
+        "datas": [],
+        "milhas": 0
+    },
+    {
+        "cpf": "55555555555",
+        "nome": "guilherme",
+        "reservas": [],
+        "datas": [],
+        "milhas": 0
+    },
+    {
+        "cpf": "66666666666",
+        "nome": "antonio",
+        "reservas": [],
+        "datas": [],
+        "milhas": 0
+    },
+    {
+        "cpf": "77777777777",
+        "nome": "felipe",
+        "reservas": [],
+        "datas": [],
+        "milhas": 0
+    }
+]

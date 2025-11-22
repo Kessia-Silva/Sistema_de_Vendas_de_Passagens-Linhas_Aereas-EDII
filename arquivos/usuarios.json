@@ -1,39 +1,32 @@
 [
     {
         "email": "larissa@gmail.com",
-        "senha": "12345",
-        "cpf": "111"
+        "senha": "12345"
     },
     {
         "email": "antonela@gmail.com",
-        "senha": "12345",
-        "cpf": "222"
+        "senha": "12345"
     },
     {
         "email": "rafael@gmail.com",
-        "senha": "12345",
-        "cpf": "333"
+        "senha": "12345"
     },
     {
         "email": "iuri@gmail.com",
-        "senha": "12345",
-        "cpf": "444"
+        "senha": "12345"
     },
     {
         "email": "Guilherme@gmail.com",
-        "senha": "12345",
-        "cpf": "555"
+        "senha": "12345"
     },
     {
         "email": "Antonio@gmail.com",
-        "senha": "12345",
-        "cpf": "666"
+        "senha": "12345"
     },
 
     {
         "email": "felipe@gmail.com",
-        "senha": "12345",
-        "cpf": "3900"
+        "senha": "12345"
     }
 
 ]

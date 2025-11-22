@@ -1,17 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session #importando a classe Flask do pacote Flask
-from arquivos.manipular_usuarios import carregar_usuarios, salvar_usuarios # chamando o arquivo de usuarios
-from arquivos.manipular_voos import carregar_voos, salvar_voos # chamando as funções para manipular o arquivo de voos
-from arquivos.manipular_adm import carregar_adms #  chamando as funções para manipular o arquivo de adms
-from arquivos.ArvoreB_VendaPassagens import arvore, reconstruir_arvore #  chamando as funções para manipular Arvore
-from arquivos.manipular_Informacoes import carregar_valor, salvar_valor #  chamando as funções para manipular que salvar o codigo de passagens
-from arquivos.manipular_Reservas import carregar_reservas, salvar_reservas #  chamando as funções para manipular o arquivo de reservas 
-from arquivos.ClasseReserva import RegistroPassagem # Importando classe de Reserva
+from arquivos.ManipulandoArquivos.manipular_usuarios import carregar_usuarios, salvar_usuarios # chamando o arquivo de usuarios
+from arquivos.ManipulandoArquivos.manipular_voos import carregar_voos, salvar_voos # chamando as funções para manipular o arquivo de voos
+from arquivos.ManipulandoArquivos.manipular_adm import carregar_adms #  chamando as funções para manipular o arquivo de adms
+from arquivos.Arvores.ArvoreB_VendaPassagens import arvore, reconstruir_arvore #  chamando as funções para manipular Arvore
+from arquivos.ManipulandoArquivos.manipular_Informacoes import carregar_valor, salvar_valor #  chamando as funções para manipular que salvar o codigo de passagens
+from arquivos.ManipulandoArquivos.manipular_Reservas import carregar_reservas, salvar_reservas #  chamando as funções para manipular o arquivo de reservas 
+from arquivos.Classes.ClasseReserva import RegistroPassagem # Importando classe de Reserva
 from arquivos.respostas import respostas # Importando o arquivo de respostas do ChatBot
 
 import os
 from igraph import Graph, plot
 import folium
-from arquivos.manipular_coordenadas import carregar_coordenadas
+from arquivos.ManipulandoArquivos.manipular_coordenadas import carregar_coordenadas
 
 coordenadas_aeroportos = carregar_coordenadas()
 
@@ -105,9 +105,6 @@ def reservar_assento(codigo, assento):
 @app.route("/minhas_reservas")
 def minhas_reservas():
     arvore = reconstruir_arvore()
-    cpf = session.get("cpf")
-    if not cpf:
-        return redirect(url_for("login_user"))
 
     reservas_usuarios = []
     voos_encontrados = []
@@ -187,7 +184,7 @@ def login_user():
         for usuario in usuarios:
             if usuario["email"] == email and usuario["senha"] == senha:
                 session["email"] = email  # guarda na sessão
-                session["cpf"] = usuario["cpf"] 
+                # session["cpf"] = usuario["cpf"] -> usar isso para armazenar o objeto cliente.
                 return redirect(url_for("homeUser")) 
             
         mensagem = "Email ou senha incorretos!"
