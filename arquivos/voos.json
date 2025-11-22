@@ -8,9 +8,7 @@
         "Numero_de_assentos": 60,
         "Hora": "10:10",
         "Data": "20/11",
-        "Assentos_ocupados": [
-            "6"
-        ],
+        "Assentos_ocupados": [],
         "Milhas_percorridas": 10000
     },
     {

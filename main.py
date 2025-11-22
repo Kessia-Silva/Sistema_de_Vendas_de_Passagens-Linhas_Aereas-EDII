@@ -157,43 +157,62 @@ def minhas_reservas():
         voos_encontrados=voos_encontrados
     )
 
+def clientes_para_dict(clientes_objetos):
+    lista_dicts = []
+    for c in clientes_objetos:
+        lista_dicts.append({
+            "cpf": c.cpf,
+            "nome": c.nome,
+            "reservas": c.reservas,
+            "datas": c.datas,
+            "milhas": c.milhas
+        })
+    return lista_dicts
 
 
 @app.route("/cancelar_reserva/<int:codigo_passagem>")
 def cancelar_reserva(codigo_passagem):
     global reservas
-    arvore = reconstruir_arvore()
     cpf = session.get("cpf")
     if not cpf:
         return redirect(url_for("login_user"))
 
-    # 1. Buscar a reserva na árvore B
-    reserva = arvore.buscar(codigo_passagem)
+    # Reconstruir árvores
+    arvore_clientes = reconstruir_arvore_clientes()
+    arvore_passagens = reconstruir_arvore()
 
+    # 1. Buscar a reserva na árvore de passagens
+    reserva = arvore_passagens.buscar(codigo_passagem)
     if not reserva:
         return redirect(url_for("minhas_reservas"))
 
     # 2. Liberar o assento no voo
     codigo_voo = reserva.codigo_voo
     assento = reserva.assento
-
-    voo = next((v for v in voos if v["Codigo_do_voo"] == codigo_voo), None)
-
+    voo = next((v for v in voos if str(v["Codigo_do_voo"]) == codigo_voo), None)
     if voo and assento in voo["Assentos_ocupados"]:
         voo["Assentos_ocupados"].remove(assento)
-
     salvar_voos(voos)
 
-    # 3. Remover do arquivo reservas
+    # 3. Remover da lista de reservas do cliente
+    cliente = arvore_clientes.buscar(cpf)
+    if cliente and codigo_passagem in cliente.reservas:
+        index = cliente.reservas.index(codigo_passagem)
+        cliente.reservas.pop(index)
+        cliente.datas.pop(index)  # remove também a data correspondente
+        cliente.milhas -= voo["Milhas_percorridas"] 
+        # Salvar clientes atualizados
+        clientes_dicts = clientes_para_dict(arvore_clientes.listar_chaves())
+        salvar_clientes(clientes_dicts)
 
-    reservas = [
-        r for r in reservas 
-        if r.get("codigo_passagem") != codigo_passagem
-    ]
 
+    # 4. Remover da lista global de reservas
+    reservas = [r for r in reservas if r.get("codigo_passagem") != codigo_passagem]
     salvar_reservas(reservas)
 
     return redirect(url_for("minhas_reservas"))
+
+
 
 
 #-----------Rotas para Telas iniciais do sistema ----------
