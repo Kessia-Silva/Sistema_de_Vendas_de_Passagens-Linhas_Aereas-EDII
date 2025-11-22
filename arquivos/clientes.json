@@ -44,12 +44,8 @@
     {
         "cpf": "77777777777",
         "nome": "felipe",
-        "reservas": [
-            1032
-        ],
-        "datas": [
-            "22/11"
-        ],
-        "milhas": 9000
+        "reservas": [],
+        "datas": [],
+        "milhas": 0
     }
 ]
