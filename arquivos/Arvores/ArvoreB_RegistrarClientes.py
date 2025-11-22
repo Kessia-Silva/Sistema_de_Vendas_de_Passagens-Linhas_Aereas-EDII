@@ -14,9 +14,9 @@ def reconstruir_arvore_clientes():
         cliente = Cliente(
             cpf=d["cpf"],
             nome=d["nome"],
-            reservas=d.get("reservas", []),
-            datas=d.get("datas", []),
-            milhas=d.get("milhas", 0)
+            reservas=d.get("reservas"),
+            datas=d.get("datas"),
+            milhas=d.get("milhas")
         )
         arvore.inserir(cliente)
 

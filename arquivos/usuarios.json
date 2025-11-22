@@ -1,32 +1,37 @@
 [
     {
+        "cpf": "11111111111",
         "email": "larissa@gmail.com",
         "senha": "12345"
     },
     {
+        "cpf": "22222222222",
         "email": "antonela@gmail.com",
         "senha": "12345"
     },
     {
+        "cpf": "33333333333",
         "email": "rafael@gmail.com",
         "senha": "12345"
     },
     {
+        "cpf": "44444444444",
         "email": "iuri@gmail.com",
         "senha": "12345"
     },
     {
-        "email": "Guilherme@gmail.com",
+        "cpf": "55555555555",
+        "email": "guilherme@gmail.com",
         "senha": "12345"
     },
     {
-        "email": "Antonio@gmail.com",
+        "cpf": "66666666666",
+        "email": "antonio@gmail.com",
         "senha": "12345"
     },
-
     {
+        "cpf": "77777777777",
         "email": "felipe@gmail.com",
         "senha": "12345"
     }
-
 ]

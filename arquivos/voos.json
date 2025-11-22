@@ -8,7 +8,10 @@
         "Numero_de_assentos": 60,
         "Hora": "10:10",
         "Data": "20/11",
-        "Assentos_ocupados": []
+        "Assentos_ocupados": [
+            "6"
+        ],
+        "Milhas_percorridas": 10000
     },
     {
         "Codigo_do_voo": "4521",
@@ -19,9 +22,8 @@
         "Numero_de_assentos": 80,
         "Hora": "15:30",
         "Data": "22/11",
-        "Assentos_ocupados": [
-            "3"
-        ]
+        "Assentos_ocupados": [],
+        "Milhas_percorridas": 9000
     },
     {
         "Codigo_do_voo": "7689",
@@ -32,7 +34,8 @@
         "Numero_de_assentos": 30,
         "Hora": "08:00",
         "Data": "25/11",
-        "Assentos_ocupados": []
+        "Assentos_ocupados": [],
+        "Milhas_percorridas": 8000
     },
     {
         "Codigo_do_voo": "9987",
@@ -43,7 +46,8 @@
         "Numero_de_assentos": 90,
         "Hora": "12:45",
         "Data": "28/11",
-        "Assentos_ocupados": []
+        "Assentos_ocupados": [],
+        "Milhas_percorridas": 7000
     },
     {
         "Codigo_do_voo": "1122",
@@ -54,7 +58,8 @@
         "Numero_de_assentos": 100,
         "Hora": "20:15",
         "Data": "30/11",
-        "Assentos_ocupados": []
+        "Assentos_ocupados": [],
+        "Milhas_percorridas": 7200
     },
     {
         "Codigo_do_voo": "1234",
@@ -65,7 +70,8 @@
         "Numero_de_assentos": 50,
         "Hora": "20:59",
         "Data": "2025-12-18",
-        "Assentos_ocupados": []
+        "Assentos_ocupados": [],
+        "Milhas_percorridas": 9000
     },
     {
         "Codigo_do_voo": "1745",
@@ -76,6 +82,7 @@
         "Numero_de_assentos": 50,
         "Hora": "21:00",
         "Data": "2026-01-06",
-        "Assentos_ocupados": []
+        "Assentos_ocupados": [],
+        "Milhas_percorridas": 11000
     }
 ]

@@ -153,3 +153,18 @@ class ArvoreBClientes:
             self.listar_por_inicial(letra, no.filhos[len(no.chaves)], resultado)
 
         return resultado
+
+    # ----------------------------------------
+    # Imprimir a árvore completa por nível
+    # ----------------------------------------
+    def imprimir(self, no=None, nivel=0):
+        if no is None:
+            no = self.raiz
+
+        # Mostra os CPFs e nomes dos clientes do nó atual
+        lista_formatada = [f"{c.cpf} ({c.nome})" for c in no.chaves]
+        print("   " * nivel + f"Nível {nivel}: {lista_formatada}")
+
+        # Chama recursivamente para os filhos
+        for filho in no.filhos:
+            self.imprimir(filho, nivel + 1)

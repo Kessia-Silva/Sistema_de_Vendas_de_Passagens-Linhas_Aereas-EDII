@@ -7,6 +7,8 @@ from arquivos.ManipulandoArquivos.manipular_Informacoes import carregar_valor, s
 from arquivos.ManipulandoArquivos.manipular_Reservas import carregar_reservas, salvar_reservas #  chamando as funções para manipular o arquivo de reservas 
 from arquivos.Classes.ClasseReserva import RegistroPassagem # Importando classe de Reserva
 from arquivos.respostas import respostas # Importando o arquivo de respostas do ChatBot
+from arquivos.Arvores.ArvoreB_RegistrarClientes import arvore_clientes 
+from arquivos.ManipulandoArquivos.manipularClientes import salvar_clientes
 
 import os
 from igraph import Graph, plot
@@ -16,7 +18,6 @@ from arquivos.ManipulandoArquivos.manipular_coordenadas import carregar_coordena
 coordenadas_aeroportos = carregar_coordenadas()
 
 app = Flask(__name__)  # cria a aplicação
-arvore.imprimir()
 
 
 app.secret_key = "123456"
@@ -67,6 +68,9 @@ def confirmarReserva(codigo, assento):
 @app.route("/reservar_assento/<codigo>/<int:assento>", methods=["POST"])
 def reservar_assento(codigo, assento):
     global valor  # necessário para alterar a variável global
+    cpf = session.get("cpf")
+    cliente = arvore_clientes.buscar(cpf)  # pega o objeto Cliente
+    print("CPF da sessão:", cpf)
 
     voo = next((v for v in voos if str(v["Codigo_do_voo"]) == codigo), None)
     if voo is None:
@@ -79,27 +83,45 @@ def reservar_assento(codigo, assento):
 
         # Incrementa o valor da passagem
         valor += 1
-        salvar_valor(valor)  # salva no arquivo o novo valor
+        salvar_valor(valor)
 
         # Cria reserva
         registro = RegistroPassagem(
            codigo_passagem=valor,
-           cpf=session.get("cpf"),
-           codigo_voo= codigo,
+           cpf=cpf,
+           codigo_voo=codigo,
            assento=str(assento)
-         )
+        )
 
         arvore.inserir(registro)
 
+        # Salva a reserva no arquivo geral
         reservas.append({
          "codigo_passagem": registro.codigo_passagem,
          "cpf": registro.cpf,
          "codigo_voo": registro.codigo_voo,
          "assento": registro.assento
-         })
+        })
         salvar_reservas(reservas)
 
-    return "", 204  # não retorna conteúdo
+        # Atualiza o cliente: adiciona reserva, data e milhas
+        cliente.reservas.append(registro.codigo_passagem)
+        cliente.datas.append(voo["Data"]) 
+        cliente.milhas += voo["Milhas_percorridas"]  # soma milhas do voo
+
+        # Salva a lista de clientes
+        lista_clientes = arvore_clientes.listar_chaves()
+        salvar_clientes([{
+            "cpf": c.cpf,
+            "nome": c.nome,
+            "reservas": c.reservas,
+            "datas": c.datas,
+            "milhas": c.milhas
+        } for c in lista_clientes])
+
+
+    return "", 204
+
 
 #-----------Rotas para Cancelar/Ve os Voos reservados ----------
 @app.route("/minhas_reservas")
@@ -173,9 +195,9 @@ def editar():
         return redirect(url_for("login_adm"))  # bloqueia acesso direto
     return render_template("InicialAdm.html", voos_agendados = voos, email=session["email"])
 
-@app.route("/login_user", methods = ["GET", "POST"])
+@app.route("/login_user", methods=["GET", "POST"])
 def login_user():
-    mensagem = "" # só processa se o form for enviado 
+    mensagem = ""  # só processa se o form for enviado
     if request.method == "POST":
         email = request.form.get("email")
         senha = request.form.get("senha")
@@ -183,10 +205,13 @@ def login_user():
         # Verifica email e senha
         for usuario in usuarios:
             if usuario["email"] == email and usuario["senha"] == senha:
-                session["email"] = email  # guarda na sessão
-                # session["cpf"] = usuario["cpf"] -> usar isso para armazenar o objeto cliente.
-                return redirect(url_for("homeUser")) 
-            
+                # Buscar o cliente na árvore
+                cliente = arvore_clientes.buscar(usuario["cpf"])  # usando a árvore de clientes
+                if cliente:
+                    session["cpf"] = cliente.cpf  # guarda o cpf do cliente na sessão
+                    session["email"] = usuario["email"]
+                    return redirect(url_for("homeUser"))
+
         mensagem = "Email ou senha incorretos!"
 
     return render_template("login_user.html", mensagem=mensagem)
@@ -194,7 +219,7 @@ def login_user():
 
 @app.route("/homeUser")
 def homeUser():
-    return render_template("homeUser.html", email=session["email"])
+    return render_template("homeUser.html", email = session["email"])
 
 @app.route("/login_adm", methods = ["GET", "POST"])
 def login_adm():
