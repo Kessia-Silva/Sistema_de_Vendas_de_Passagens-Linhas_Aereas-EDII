@@ -1,1 +1,8 @@
-[]
+[
+    {
+        "codigo_passagem": 1032,
+        "cpf": "77777777777",
+        "codigo_voo": "4521",
+        "assento": "10"
+    }
+]

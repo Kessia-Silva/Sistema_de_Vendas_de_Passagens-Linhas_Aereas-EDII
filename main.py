@@ -2,18 +2,18 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, s
 from arquivos.ManipulandoArquivos.manipular_usuarios import carregar_usuarios, salvar_usuarios # chamando o arquivo de usuarios
 from arquivos.ManipulandoArquivos.manipular_voos import carregar_voos, salvar_voos # chamando as funções para manipular o arquivo de voos
 from arquivos.ManipulandoArquivos.manipular_adm import carregar_adms #  chamando as funções para manipular o arquivo de adms
-from arquivos.Arvores.ArvoreB_VendaPassagens import arvore, reconstruir_arvore #  chamando as funções para manipular Arvore
+from arquivos.Arvores.ArvoreB_VendaPassagens import arvore, reconstruir_arvore #  chamando as funções para manipular Arvore de passagens
 from arquivos.ManipulandoArquivos.manipular_Informacoes import carregar_valor, salvar_valor #  chamando as funções para manipular que salvar o codigo de passagens
 from arquivos.ManipulandoArquivos.manipular_Reservas import carregar_reservas, salvar_reservas #  chamando as funções para manipular o arquivo de reservas 
 from arquivos.Classes.ClasseReserva import RegistroPassagem # Importando classe de Reserva
 from arquivos.respostas import respostas # Importando o arquivo de respostas do ChatBot
-from arquivos.Arvores.ArvoreB_RegistrarClientes import arvore_clientes, reconstruir_arvore_clientes
-from arquivos.ManipulandoArquivos.manipularClientes import salvar_clientes
+from arquivos.Arvores.ArvoreB_RegistrarClientes import arvore_clientes, reconstruir_arvore_clientes #  chamando as funções para manipular Arvore de clientes
+from arquivos.ManipulandoArquivos.manipularClientes import salvar_clientes #  chamando as funções para manipular o arquivo de clientes
+from arquivos.ManipulandoArquivos.manipular_coordenadas import carregar_coordenadas
 
 import os
 from igraph import Graph, plot
 import folium
-from arquivos.ManipulandoArquivos.manipular_coordenadas import carregar_coordenadas
 
 coordenadas_aeroportos = carregar_coordenadas()
 
@@ -246,7 +246,14 @@ def login_user():
 
 @app.route("/homeUser")
 def homeUser():
-    return render_template("homeUser.html", email = session["email"])
+    cpf = session.get("cpf")
+    if not cpf:
+        return redirect(url_for("login_user"))
+
+    cliente = arvore_clientes.buscar(cpf)
+    email = session.get("email")
+    return render_template("homeUser.html", cliente=cliente, email=email)
+
 
 @app.route("/login_adm", methods = ["GET", "POST"])
 def login_adm():
