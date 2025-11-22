@@ -1,1 +1,14 @@
-[]
+[
+    {
+        "codigo_passagem": 1019,
+        "cpf": "3900",
+        "codigo_voo": "3413",
+        "assento": "1"
+    },
+    {
+        "codigo_passagem": 1021,
+        "cpf": "3900",
+        "codigo_voo": "3413",
+        "assento": "1"
+    }
+]

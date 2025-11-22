@@ -1,17 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session #importando a classe Flask do pacote Flask
 from arquivos.manipular_usuarios import carregar_usuarios, salvar_usuarios # chamando o arquivo de usuarios
-from arquivos.manipular_voos import carregar_voos, salvar_voos # chamando as funções para manipular o arquivo
-from arquivos.manipular_adm import carregar_adms, salvar_adms
-from arquivos.manipular_VendasPassagens import carregar_registros_passagens, salvar_registros_passagens
-from arquivos.ArvoreB_VendaPassagens import arvore, reconstruir_arvore
-from arquivos.manipular_Informacoes import carregar_valor, salvar_valor
-from arquivos.manipular_Reservas import carregar_reservas, salvar_reservas
-from arquivos.ArvoreB_VendaPassagens import RegistroPassagem
+from arquivos.manipular_voos import carregar_voos, salvar_voos # chamando as funções para manipular o arquivo de voos
+from arquivos.manipular_adm import carregar_adms #  chamando as funções para manipular o arquivo de adms
+from arquivos.ArvoreB_VendaPassagens import arvore, reconstruir_arvore #  chamando as funções para manipular Arvore
+from arquivos.manipular_Informacoes import carregar_valor, salvar_valor #  chamando as funções para manipular que salvar o codigo de passagens
+from arquivos.manipular_Reservas import carregar_reservas, salvar_reservas #  chamando as funções para manipular o arquivo de reservas 
+from arquivos.ClasseReserva import RegistroPassagem # Importando classe de Reserva
+from arquivos.respostas import respostas # Importando o arquivo de respostas do ChatBot
 
-
-from arquivos.respostas import respostas
-
-from arquivos.respostas import respostas
 import os
 from igraph import Graph, plot
 import folium
@@ -25,6 +21,7 @@ arvore.imprimir()
 
 app.secret_key = "123456"
 
+# Variaveis globais
 voos = carregar_voos()
 adms = carregar_adms()
 usuarios = carregar_usuarios()
@@ -33,10 +30,12 @@ valor = carregar_valor()
 
 
 # Definindo Rotas
+#-----------Rotas principal ----------
 @app.route("/")
 def home():
     return render_template("home.html")
 
+#-----------Rotas para Reservar um Voo ----------
 @app.route("/reservar_voo")   
 def reserva():
     return render_template("reservar_voo.html", voos_agendados = voos)
@@ -102,6 +101,7 @@ def reservar_assento(codigo, assento):
 
     return "", 204  # não retorna conteúdo
 
+#-----------Rotas para Cancelar/Ve os Voos reservados ----------
 @app.route("/minhas_reservas")
 def minhas_reservas():
     cpf = session.get("cpf")
@@ -165,8 +165,7 @@ def cancelar_reserva(codigo_passagem):
     return redirect(url_for("minhas_reservas"))
 
 
-
-
+#-----------Rotas para Telas iniciais do sistema ----------
 @app.route("/InicialAdm")   
 def editar():
     if "email" not in session:
@@ -225,6 +224,7 @@ def logoutUser():
     session.clear()
     return redirect(url_for("login_user"))
 
+#-----------Rotas para Funções de Adm ----------
 @app.route("/criar_voo", methods=["GET", "POST"])
 def criar_voo():
     mensagem = ""
@@ -333,7 +333,6 @@ def remover_voo():
 def listar_voos():
     return render_template("listar_voos.html", voos=voos)
 
-
 @app.route("/gerenciar_usuario", methods=["GET", "POST"])
 def gerenciar_usuario():
     mensagem = ""
@@ -392,11 +391,10 @@ def gerenciar_usuario():
     return render_template("gerenciar_usuario.html", usuarios=usuarios, usuario=usuario_selecionado, mensagem=mensagem)
 
 
-
+#-----------Rotas para Funçao Extra ----------
 @app.route("/chat_bot")
 def chat_page():
     return render_template("chat_bot.html")
-
 
 def get_resposta(msg):
     msg = msg.lower().strip()
@@ -412,13 +410,7 @@ def chat_bot():
     return jsonify({"reply": resposta})
 
 
-
-
-
-
-
-
-
+#-----------Grafos----------
 def criar_grafo_voos(voos):
     g = Graph(directed=True)
     aeroportos = set()
@@ -491,13 +483,10 @@ def buscar_conexoes(origem, destino):
     return [g.vs[i]["name"] for i in caminhos[0]]
 
 
-
 @app.route("/grafico_voos")
 def grafico_voos():
     imagem_grafo = criar_imagem_grafo(voos)
     return render_template("grafico_voos.html", imagem_grafo=imagem_grafo)
-
-
 
 
 @app.route("/simular_conexoes", methods=["GET", "POST"])
@@ -521,11 +510,6 @@ def simular_conexoes():
         destino=destino,
         caminho=caminho
     )
-
-
-
-
-
 
 
 #-----------Mapa dos paises----------
@@ -568,11 +552,6 @@ def criar_mapa_voos(voos, coordenadas):
 def mapa_grafico_voos():
     criar_mapa_voos(voos, coordenadas_aeroportos)
     return render_template("mapa_grafico_voos.html")
-
-
-
-
-
 
 
 # Rodar a aplicação
