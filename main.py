@@ -659,6 +659,13 @@ def mapa_grafico_voos():
     criar_mapa_voos(voos, coordenadas_aeroportos)
     return render_template("mapa_grafico_voos.html")
 
+@app.route("/listar_usuarios")
+def listar_usuarios():
+    arvore_clientes = reconstruir_arvore_clientes()
+    usuarios = arvore_clientes.listar_chaves()
+    return render_template("listar_usuarios.html", usuarios=usuarios)
+
+
 
 # Rodar a aplicação
 if __name__ == "__main__":
