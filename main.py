@@ -665,7 +665,36 @@ def listar_usuarios():
     usuarios = arvore_clientes.listar_chaves()
     return render_template("listar_usuarios.html", usuarios=usuarios)
 
+@app.route("/relatorios")
+def relatorios():
+    # Reconstruir árvores ou carregar dados
+    arvore_passagens = reconstruir_arvore()
+    
+    # Listas que vamos popular
+    destinos = {}
+    voos_realizados = 0
+    reservas_totais = 0
 
+    # Iterar sobre todas as reservas
+    for reserva in arvore_passagens.listar_chaves():
+        reservas_totais += 1
+        voo = next((v for v in voos if str(v["Codigo_do_voo"]) == reserva.codigo_voo), None)
+        if voo:
+            voos_realizados += 1
+            destino = voo["Destino"]
+            if destino not in destinos:
+                destinos[destino] = 0
+            destinos[destino] += 1
+
+    # Ordenar destinos mais populares
+    destinos_ordenados = sorted(destinos.items(), key=lambda x: x[1], reverse=True)
+
+    return render_template(
+        "relatorios.html",
+        voos_realizados=voos_realizados,
+        reservas_totais=reservas_totais,
+        destinos_ordenados=destinos_ordenados
+    )
 
 # Rodar a aplicação
 if __name__ == "__main__":
