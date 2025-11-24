@@ -8,9 +8,7 @@
         "Numero_de_assentos": 60,
         "Hora": "10:10",
         "Data": "20/11",
-        "Assentos_ocupados": [
-            "1"
-        ],
+        "Assentos_ocupados": [],
         "Milhas_percorridas": 10000
     },
     {
@@ -46,10 +44,7 @@
         "Numero_de_assentos": 90,
         "Hora": "12:45",
         "Data": "28/11",
-        "Assentos_ocupados": [
-            "3",
-            "14"
-        ],
+        "Assentos_ocupados": [],
         "Milhas_percorridas": 7000
     },
     {
@@ -73,10 +68,7 @@
         "Numero_de_assentos": 50,
         "Hora": "20:59",
         "Data": "2025-12-18",
-        "Assentos_ocupados": [
-            "48",
-            "39"
-        ],
+        "Assentos_ocupados": [],
         "Milhas_percorridas": 9000
     },
     {
