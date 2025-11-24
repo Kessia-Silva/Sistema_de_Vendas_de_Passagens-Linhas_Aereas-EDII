@@ -1,1 +1,24 @@
-[]
+[
+    {
+        "codigo_passagem": 1098,
+        "cpf": "77777777777",
+        "codigo_voo": "1122",
+        "assento": "10",
+        "preco": 9800,
+        "rota": [
+            "Brasil",
+            "Alemanha"
+        ]
+    },
+    {
+        "codigo_passagem": 1099,
+        "cpf": "77777777777",
+        "codigo_voo": "9987",
+        "assento": "8",
+        "preco": 9500,
+        "rota": [
+            "Brasil",
+            "França"
+        ]
+    }
+]

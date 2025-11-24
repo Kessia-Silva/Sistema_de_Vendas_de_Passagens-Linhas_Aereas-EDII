@@ -44,7 +44,9 @@
         "Numero_de_assentos": 90,
         "Hora": "12:45",
         "Data": "28/11",
-        "Assentos_ocupados": [],
+        "Assentos_ocupados": [
+            "8"
+        ],
         "Milhas_percorridas": 7000
     },
     {
@@ -56,7 +58,9 @@
         "Numero_de_assentos": 100,
         "Hora": "20:15",
         "Data": "30/11",
-        "Assentos_ocupados": [],
+        "Assentos_ocupados": [
+            "10"
+        ],
         "Milhas_percorridas": 7200
     },
     {
@@ -94,5 +98,77 @@
         "Data": "15/11",
         "Assentos_ocupados": [],
         "Milhas_percorridas": 9000
+    },
+    {
+        "Codigo_do_voo": "2233",
+        "Origem": "França",
+        "Destino": "Alemanha",
+        "Preco_da_passagem": 2000,
+        "Tipo_de_aeronave": "Airbus A320",
+        "Numero_de_assentos": 60,
+        "Hora": "14:00",
+        "Data": "01/12",
+        "Assentos_ocupados": [],
+        "Milhas_percorridas": 1500
+    },
+    {
+        "Codigo_do_voo": "3344",
+        "Origem": "Alemanha",
+        "Destino": "Coreia",
+        "Preco_da_passagem": 3500,
+        "Tipo_de_aeronave": "Jato",
+        "Numero_de_assentos": 70,
+        "Hora": "09:30",
+        "Data": "02/12",
+        "Assentos_ocupados": [],
+        "Milhas_percorridas": 7000
+    },
+    {
+        "Codigo_do_voo": "4455",
+        "Origem": "Coreia",
+        "Destino": "Japão",
+        "Preco_da_passagem": 1200,
+        "Tipo_de_aeronave": "Boeing 747",
+        "Numero_de_assentos": 50,
+        "Hora": "16:45",
+        "Data": "03/12",
+        "Assentos_ocupados": [],
+        "Milhas_percorridas": 1000
+    },
+    {
+        "Codigo_do_voo": "5566",
+        "Origem": "Estados Unidos",
+        "Destino": "Japão",
+        "Preco_da_passagem": 6000,
+        "Tipo_de_aeronave": "Jato",
+        "Numero_de_assentos": 60,
+        "Hora": "18:00",
+        "Data": "04/12",
+        "Assentos_ocupados": [],
+        "Milhas_percorridas": 9000
+    },
+    {
+        "Codigo_do_voo": "6677",
+        "Origem": "Japão",
+        "Destino": "Coreia",
+        "Preco_da_passagem": 1300,
+        "Tipo_de_aeronave": "Boeing 737",
+        "Numero_de_assentos": 50,
+        "Hora": "12:15",
+        "Data": "05/12",
+        "Assentos_ocupados": [],
+        "Milhas_percorridas": 1000
+    },
+    {
+        "Codigo_do_voo": "7788",
+        "Origem": "França",
+        "Destino": "Estados Unidos",
+        "Preco_da_passagem": 8000,
+        "Tipo_de_aeronave": "Airbus A350",
+        "Numero_de_assentos": 80,
+        "Hora": "13:30",
+        "Data": "06/12",
+        "Assentos_ocupados": [],
+        "Milhas_percorridas": 7000
     }
 ]

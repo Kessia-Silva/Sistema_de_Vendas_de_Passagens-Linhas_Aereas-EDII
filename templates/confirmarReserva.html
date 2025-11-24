@@ -321,7 +321,12 @@ tfoot {
 
             <p><strong>Data:</strong> {{ voo.Data }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Hora:</strong> {{ voo.Hora }}</p>
             <p><strong>Assento:</strong> {{ assento }}</p>
-            <p><strong>Rota Escolhida:</strong> {{ rota | join(" → ") }}</p>
+            {% if rota %}
+<p><strong>Rota Escolhida:</strong> {{ rota | join(" → ") }}</p>
+{% else %}
+<p><strong>Rota Escolhida:</strong> Direta</p>
+{% endif %}
+
       </div>
     </div>
 

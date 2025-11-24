@@ -62,11 +62,9 @@ def confirmarReserva(codigo, assento):
     voo = next((v for v in voos if v["Codigo_do_voo"] == codigo), None)
     if voo is None:
         return "Voo não encontrado", 404
-    
-    rota_escolhida = session.get("rota_escolhida")
-    preco_final = session.get("preco_calculado")
 
-    return render_template("confirmarReserva.html", voo=voo, assento=assento, rota=rota_escolhida, preco=preco_final)
+    return render_template("confirmarReserva.html", voo=voo, assento=assento, rota=session.get("rota"),
+    preco=session.get("preco"))
 
 @app.route("/reservar_assento/<codigo>/<int:assento>", methods=["POST"])
 def reservar_assento(codigo, assento):
@@ -105,14 +103,19 @@ def reservar_assento(codigo, assento):
 
         arvore_passagens.inserir(registro)
 
-        # 3. salvar reserva no arquivo global
+       # 3. salvar reserva no arquivo global
         reservas.append({
-            "codigo_passagem": registro.codigo_passagem,
-            "cpf": registro.cpf,
-            "codigo_voo": registro.codigo_voo,
-            "assento": registro.assento
-        })
+        "codigo_passagem": registro.codigo_passagem,
+        "cpf": registro.cpf,
+        "codigo_voo": registro.codigo_voo,
+        "assento": registro.assento,
+        "preco": session.get("preco"),
+        "rota": session.get("rota")
+       })
         salvar_reservas(reservas)
+        print("DEBUG SESSAO:", session.get("rota"), session.get("preco"))
+
+
 
         # 4. Atualizar objeto Cliente
         cliente.reservas.append(registro.codigo_passagem)
@@ -708,10 +711,12 @@ def simular_conexoes(codigo_voo):
         qtd_paradas = len(rota) - 2
         preco_base = voo["Preco_da_passagem"]
 
-        if qtd_paradas >= 1:
-            preco_final = round(preco_base * 0.90, 2)
-        else:
+        if qtd_paradas == 0:
             preco_final = preco_base
+        else:
+            # Desconto progressivo: 10% por parada, até no máximo 50%
+            desconto = min(0.1 * qtd_paradas, 0.5)
+            preco_final = round(preco_base * (1 - desconto), 2)
 
         lista_rotas.append({
             "rota": rota,
@@ -730,6 +735,7 @@ def simular_conexoes(codigo_voo):
     )
 
 
+
 @app.route("/escolher_rota/<int:codigo_voo>/<int:indice_rota>")
 def escolher_rota(codigo_voo, indice_rota):
 
@@ -739,8 +745,8 @@ def escolher_rota(codigo_voo, indice_rota):
 
     rota_escolhida = rotas[indice_rota]
 
-    session["rota_escolhida"] = rota_escolhida["rota"]
-    session["preco_calculado"] = rota_escolhida["preco"]
+    session["rota"] = rota_escolhida["rota"]
+    session["preco"] = rota_escolhida["preco"]
 
     return redirect(url_for("mapaVoo", codigo=codigo_voo))
 

@@ -36,42 +36,48 @@
   {% if reservas_usuario %}
   <table class="table table-bordered table-hover voos-table" id="tabela">
     <thead>
-      <tr>
-        <th>Código da Passagem</th>
-        <th>CPF</th>
-        <th>Código do Voo</th>
-        <th>Assento Reservado</th>
-        <th>Origem</th>
-        <th>Destino</th>
-        <th>Preço</th>
-        <th>Cancelar</th>
-      </tr>
-    </thead>
+  <tr>
+    <th>Código da Passagem</th>
+    <th>CPF</th>
+    <th>Código do Voo</th>
+    <th>Assento Reservado</th>
+    <th>Origem</th>
+    <th>Destino</th>
+    <th>Rota</th>
+    <th>Preço Pago</th>
+    <th>Cancelar</th>
+  </tr>
+</thead>
+
 
     <tbody>
-      {% for i in range(reservas_usuario|length) %}
-      <tr>
-        <td>{{ reservas_usuario[i].codigo_passagem }}</td>
-        <td>{{ reservas_usuario[i].cpf }}</td>
-        <td>{{ reservas_usuario[i].codigo_voo }}</td>
-        <td>{{ reservas_usuario[i].assento }}</td>
+  {% for i in range(reservas_usuario|length) %}
+  <tr>
+    <td>{{ reservas_usuario[i].codigo_passagem }}</td>
+    <td>{{ reservas_usuario[i].cpf }}</td>
+    <td>{{ reservas_usuario[i].codigo_voo }}</td>
+    <td>{{ reservas_usuario[i].assento }}</td>
 
-        <!-- Dados do voo -->
-        <td>{{ voos_encontrados[i].Origem }}</td>
-        <td>{{ voos_encontrados[i].Destino }}</td>
-        <td>R$ {{ voos_encontrados[i].Preco_da_passagem }}</td>
+    <!-- Dados do voo -->
+    <td>{{ voos_encontrados[i].Origem }}</td>
+    <td>{{ voos_encontrados[i].Destino }}</td>
 
-        <!-- Botão cancelar -->
-        <td>
-          <a href="{{ url_for('cancelar_reserva', codigo_passagem=reservas_usuario[i].codigo_passagem) }}"
-   class="btn btn-danger btn-sm btn-cancelar">
-  Cancelar Reserva
-</a>
+    <!-- NOVO: rota escolhida e preço pago -->
+    <td>{{ reservas_usuario[i].rota | join(' → ') }}</td>
+    <td>R$ {{ reservas_usuario[i].preco }}</td>
+    
 
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
+
+    <td>
+      <a href="{{ url_for('cancelar_reserva', codigo_passagem=reservas_usuario[i].codigo_passagem) }}"
+         class="btn btn-danger btn-sm btn-cancelar">
+        Cancelar Reserva
+      </a>
+    </td>
+  </tr>
+  {% endfor %}
+</tbody>
+
   </table>
 
   {% else %}

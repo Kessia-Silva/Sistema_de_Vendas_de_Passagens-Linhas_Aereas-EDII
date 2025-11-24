@@ -15,7 +15,9 @@ def reconstruir_arvore():
             d["codigo_passagem"],
             d["cpf"],
             d["codigo_voo"],
-            d["assento"]
+            d["assento"],
+            d["preco"],
+            d["rota"]
         )
         arvore.inserir(registro)
 
