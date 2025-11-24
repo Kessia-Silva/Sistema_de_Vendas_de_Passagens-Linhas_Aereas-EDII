@@ -302,6 +302,9 @@ tfoot {
     </a>
   </div>
     </header>
+
+
+
     <!-- Conteúdo Principal -->
 <div class="iphone">
   <header class="header">
@@ -317,7 +320,8 @@ tfoot {
 <strong>Destino:</strong> {{ voo.Destino }}</p>
 
             <p><strong>Data:</strong> {{ voo.Data }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Hora:</strong> {{ voo.Hora }}</p>
-            <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assento:</strong> {{ assento }}</p>
+            <p><strong>Assento:</strong> {{ assento }}</p>
+            <p><strong>Rota Escolhida:</strong> {{ rota | join(" → ") }}</p>
       </div>
     </div>
 
@@ -356,7 +360,7 @@ tfoot {
         <tfoot>
           <tr>
             <td>Total</td>
-            <td align="right">{{ voo.Preco_da_passagem }}</td>
+            <td align="right">R$ {{ "%.2f"|format(preco) }}</td>
           </tr>
         </tfoot>
       </table>

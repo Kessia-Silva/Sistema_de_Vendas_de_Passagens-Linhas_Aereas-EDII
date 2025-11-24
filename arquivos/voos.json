@@ -8,7 +8,9 @@
         "Numero_de_assentos": 60,
         "Hora": "10:10",
         "Data": "20/11",
-        "Assentos_ocupados": [],
+        "Assentos_ocupados": [
+            "1"
+        ],
         "Milhas_percorridas": 10000
     },
     {
@@ -73,8 +75,7 @@
         "Data": "2025-12-18",
         "Assentos_ocupados": [
             "48",
-            "39",
-            "1"
+            "39"
         ],
         "Milhas_percorridas": 9000
     },
@@ -91,16 +92,15 @@
         "Milhas_percorridas": 11000
     },
     {
-    "Codigo_do_voo": "5555",
-    "Origem": "Estados Unidos",
-    "Destino": "Coreia",
-    "Preco_da_passagem": 7000,
-    "Tipo_de_aeronave": "Jato",
-    "Numero_de_assentos": 40,
-    "Hora": "19:00",
-    "Data": "15/11",
-    "Assentos_ocupados": [],
-    "Milhas_percorridas": 9000
-}
-
+        "Codigo_do_voo": "5555",
+        "Origem": "Estados Unidos",
+        "Destino": "Coreia",
+        "Preco_da_passagem": 7000,
+        "Tipo_de_aeronave": "Jato",
+        "Numero_de_assentos": 40,
+        "Hora": "19:00",
+        "Data": "15/11",
+        "Assentos_ocupados": [],
+        "Milhas_percorridas": 9000
+    }
 ]

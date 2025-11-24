@@ -18,15 +18,15 @@
         "assento": "39"
     },
     {
-        "codigo_passagem": 1092,
-        "cpf": "22222222222",
-        "codigo_voo": "1234",
-        "assento": "1"
-    },
-    {
         "codigo_passagem": 1093,
         "cpf": "22222222222",
         "codigo_voo": "9987",
         "assento": "14"
+    },
+    {
+        "codigo_passagem": 1094,
+        "cpf": "22222222222",
+        "codigo_voo": "3413",
+        "assento": "1"
     }
 ]

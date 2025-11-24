@@ -62,8 +62,11 @@ def confirmarReserva(codigo, assento):
     voo = next((v for v in voos if v["Codigo_do_voo"] == codigo), None)
     if voo is None:
         return "Voo não encontrado", 404
+    
+    rota_escolhida = session.get("rota_escolhida")
+    preco_final = session.get("preco_calculado")
 
-    return render_template("confirmarReserva.html", voo=voo, assento=assento)
+    return render_template("confirmarReserva.html", voo=voo, assento=assento, rota=rota_escolhida, preco=preco_final)
 
 @app.route("/reservar_assento/<codigo>/<int:assento>", methods=["POST"])
 def reservar_assento(codigo, assento):
@@ -716,7 +719,6 @@ def simular_conexoes(codigo_voo):
             "preco": preco_final
         })
 
-    # 🔥 salva todas as rotas calculadas na sessão
     session["rotas_info"] = lista_rotas
 
     return render_template(
@@ -737,7 +739,6 @@ def escolher_rota(codigo_voo, indice_rota):
 
     rota_escolhida = rotas[indice_rota]
 
-    # 🎯 já vem com rota, paradas e preco (tudo arrumado aqui!)
     session["rota_escolhida"] = rota_escolhida["rota"]
     session["preco_calculado"] = rota_escolhida["preco"]
 
