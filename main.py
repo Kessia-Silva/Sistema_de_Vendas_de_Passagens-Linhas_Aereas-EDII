@@ -67,72 +67,76 @@ def confirmarReserva(codigo, assento):
 
 @app.route("/reservar_assento/<codigo>/<int:assento>", methods=["POST"])
 def reservar_assento(codigo, assento):
-    global valor  # necessário para alterar a variável global
+    global valor
     cpf = session.get("cpf")
-    cliente = arvore_clientes.buscar(cpf)  # pega o objeto Cliente
-    print("CPF da sessão:", cpf)
+
+    # --- Reconstruir árvores sempre no começo ---
+    arvore_clientes = reconstruir_arvore_clientes()
+    arvore_passagens = reconstruir_arvore()
+
+    cliente = arvore_clientes.buscar(cpf)
+    if cliente is None:
+        return "Cliente não encontrado", 404
 
     voo = next((v for v in voos if str(v["Codigo_do_voo"]) == codigo), None)
     if voo is None:
         return "Voo não encontrado", 404
 
+    # Se o assento estiver livre
     if str(assento) not in voo["Assentos_ocupados"]:
-        # Marca assento como ocupado
+
+        # 1. Marcar assento como ocupado
         voo["Assentos_ocupados"].append(str(assento))
         salvar_voos(voos)
 
-        # Incrementa o valor da passagem
+        # 2. Criar nova reserva com código incremental
         valor += 1
         salvar_valor(valor)
 
-        # Cria reserva
         registro = RegistroPassagem(
-           codigo_passagem=valor,
-           cpf=cpf,
-           codigo_voo=codigo,
-           assento=str(assento)
+            codigo_passagem=valor,
+            cpf=cpf,
+            codigo_voo=codigo,
+            assento=str(assento)
         )
 
-        arvore.inserir(registro)
+        arvore_passagens.inserir(registro)
 
-        # Salva a reserva no arquivo geral
+        # 3. salvar reserva no arquivo global
         reservas.append({
-         "codigo_passagem": registro.codigo_passagem,
-         "cpf": registro.cpf,
-         "codigo_voo": registro.codigo_voo,
-         "assento": registro.assento
+            "codigo_passagem": registro.codigo_passagem,
+            "cpf": registro.cpf,
+            "codigo_voo": registro.codigo_voo,
+            "assento": registro.assento
         })
         salvar_reservas(reservas)
 
-        # Atualiza o cliente: adiciona reserva, data e milhas
+        # 4. Atualizar objeto Cliente
         cliente.reservas.append(registro.codigo_passagem)
-        cliente.datas.append(voo["Data"]) 
-        
-# ------ Recalcular milhas a partir das reservas ativas --------
+        cliente.datas.append(voo["Data"])
+
+        # 5. Recalcular milhas
         total_milhas = 0
-        arvore_passagens = reconstruir_arvore()  # garante que está atualizada
-        for cod_passagem in cliente.reservas:
-           reserva_temp = arvore_passagens.buscar(cod_passagem)
-           if reserva_temp:
-               # Pega milhas do voo correspondente
-               voo_temp = next((v for v in voos if str(v["Codigo_do_voo"]) == reserva_temp.codigo_voo), None)
-               if voo_temp:
-                  total_milhas += voo_temp["Milhas_percorridas"]
+        arvore_passagens = reconstruir_arvore()
+
+        for cod in cliente.reservas:
+            reserva_temp = arvore_passagens.buscar(cod)
+            if reserva_temp:
+                voo_temp = next((v for v in voos 
+                    if str(v["Codigo_do_voo"]) == reserva_temp.codigo_voo), None)
+
+                if voo_temp:
+                    total_milhas += voo_temp["Milhas_percorridas"]
 
         cliente.milhas = total_milhas
-        session['milhas'] = cliente.milhas  # atualiza imediatamente na sessão
+        session['milhas'] = total_milhas
 
+        # 6. Salvar TODOS os clientes corretamente
+        clientes_dicts = clientes_para_dict(arvore_clientes.listar_chaves())
+        salvar_clientes(clientes_dicts)
 
-        # Salva a lista de clientes
-        lista_clientes = arvore_clientes.listar_chaves()
-        salvar_clientes([{
-            "cpf": c.cpf,
-            "nome": c.nome,
-            "reservas": c.reservas,
-            "datas": c.datas,
-            "milhas": c.milhas
-        } for c in lista_clientes])
-
+        # 7. Reconstruir novamente
+        arvore_clientes = reconstruir_arvore_clientes()
 
     return "", 204
 
@@ -484,6 +488,60 @@ def gerenciar_usuario():
 
     
     return render_template("gerenciar_usuario.html", usuarios=usuarios, usuario=usuario_selecionado, mensagem=mensagem)
+
+@app.route("/consultar_cliente", methods=["GET", "POST"])
+def consultar_cliente():
+    clientes_encontrados = []
+    mensagem = None
+
+    # Reconstruir árvore de clientes
+    arvore_clientes = reconstruir_arvore_clientes()
+
+    if request.method == "POST":
+        tipo_busca = request.form.get("tipo_busca")
+
+        # ========================== BUSCA POR CPF ==========================
+        if tipo_busca == "cpf":
+            cpf = request.form.get("cpf_busca")
+            cliente = arvore_clientes.buscar(cpf)
+
+            if cliente:
+                clientes_encontrados = [cliente]
+            else:
+                mensagem = "Nenhum cliente encontrado com esse CPF."
+
+        # ======================= BUSCA PELA INICIAL ========================
+        elif tipo_busca == "inicial":
+            inicial = request.form.get("inicial").upper()
+
+            todos = arvore_clientes.listar_chaves()
+            clientes_encontrados = [
+                c for c in todos
+                if c.nome.upper().startswith(inicial)
+            ]
+
+            if not clientes_encontrados:
+                mensagem = f"Nenhum cliente inicia com a letra '{inicial}'."
+
+        # ========================== BUSCA POR NOME =========================
+        elif tipo_busca == "nome":
+            nome_parcial = request.form.get("nome_busca").upper()
+
+            todos = arvore_clientes.listar_chaves()
+            clientes_encontrados = [
+                c for c in todos
+                if nome_parcial in c.nome.upper()
+            ]
+
+            if not clientes_encontrados:
+                mensagem = "Nenhum cliente encontrado com esse nome."
+
+    return render_template(
+        "consultar_cliente.html",
+        clientes=clientes_encontrados,
+        mensagem=mensagem
+    )
+
 
 
 #-----------Rotas para Funçao Extra ----------

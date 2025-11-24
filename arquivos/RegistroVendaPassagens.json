@@ -1,1 +1,20 @@
-[]
+[
+    {
+        "codigo_passagem": 1088,
+        "cpf": "77777777777",
+        "codigo_voo": "9987",
+        "assento": "3"
+    },
+    {
+        "codigo_passagem": 1089,
+        "cpf": "77777777777",
+        "codigo_voo": "1234",
+        "assento": "48"
+    },
+    {
+        "codigo_passagem": 1090,
+        "cpf": "77777777777",
+        "codigo_voo": "1234",
+        "assento": "39"
+    }
+]
