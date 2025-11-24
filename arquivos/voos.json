@@ -45,7 +45,8 @@
         "Hora": "12:45",
         "Data": "28/11",
         "Assentos_ocupados": [
-            "3"
+            "3",
+            "14"
         ],
         "Milhas_percorridas": 7000
     },
@@ -72,7 +73,8 @@
         "Data": "2025-12-18",
         "Assentos_ocupados": [
             "48",
-            "39"
+            "39",
+            "1"
         ],
         "Milhas_percorridas": 9000
     },
