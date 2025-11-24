@@ -565,8 +565,6 @@ def voltar_chat():
     # Se não estiver logado (visitante)
     return redirect(url_for("home"))
 
-
-
 @app.route("/chat", methods=["POST"])
 def chat_bot():
     user_msg = request.get_json().get("message")
@@ -653,27 +651,100 @@ def grafico_voos():
     return render_template("grafico_voos.html", imagem_grafo=imagem_grafo)
 
 
-@app.route("/simular_conexoes", methods=["GET", "POST"])
-def simular_conexoes():
-    aeroportos = sorted({v.get("Origem") for v in voos if v.get("Origem")} |
-                        {v.get("Destino") for v in voos if v.get("Destino")})
+def listar_todos_os_caminhos(origem, destino):
+    g = criar_grafo_voos(voos)
 
-    caminho = None
-    origem = None
-    destino = None
+    # Mapear nome → índice e índice → nome
+    nome_para_indice = {name: i for i, name in enumerate(g.vs["name"])}
 
-    if request.method == "POST":
-        origem = request.form.get("origem")
-        destino = request.form.get("destino")
-        caminho = buscar_conexoes(origem, destino)
+    if origem not in nome_para_indice or destino not in nome_para_indice:
+        return None
+
+    indice_origem = nome_para_indice[origem]
+    indice_destino = nome_para_indice[destino]
+
+    todas_rotas = []
+    rota_atual = []
+
+    def dfs(atual):
+        rota_atual.append(atual)
+
+        if atual == indice_destino:
+            todas_rotas.append(list(rota_atual))
+        else:
+            for vizinho in g.successors(atual):
+                if vizinho not in rota_atual:
+                    dfs(vizinho)
+
+        rota_atual.pop()
+
+    dfs(indice_origem)
+
+    rotas_convertidas = []
+    for rota in todas_rotas:
+        rotas_convertidas.append([g.vs[i]["name"] for i in rota])
+
+    return rotas_convertidas
+
+
+@app.route("/simular_conexoes/<int:codigo_voo>")
+def simular_conexoes(codigo_voo):
+
+    voo = next((v for v in voos if str(v["Codigo_do_voo"]) == str(codigo_voo)), None)
+    if voo is None:
+        return "Voo não encontrado", 404
+
+    origem = voo["Origem"]
+    destino = voo["Destino"]
+
+    caminhos = listar_todos_os_caminhos(origem, destino)
+
+    lista_rotas = []
+
+    for rota in caminhos:
+        qtd_paradas = len(rota) - 2
+        preco_base = voo["Preco_da_passagem"]
+
+        if qtd_paradas >= 1:
+            preco_final = round(preco_base * 0.90, 2)
+        else:
+            preco_final = preco_base
+
+        lista_rotas.append({
+            "rota": rota,
+            "paradas": qtd_paradas,
+            "preco": preco_final
+        })
+
+    # 🔥 salva todas as rotas calculadas na sessão
+    session["rotas_info"] = lista_rotas
 
     return render_template(
         "simular_conexoes.html",
-        aeroportos=aeroportos,
         origem=origem,
         destino=destino,
-        caminho=caminho
+        rotas=lista_rotas,
+        voo=voo
     )
+
+
+@app.route("/escolher_rota/<int:codigo_voo>/<int:indice_rota>")
+def escolher_rota(codigo_voo, indice_rota):
+
+    rotas = session.get("rotas_info")
+    if not rotas:
+        return "Erro: rotas não encontradas na sessão", 400
+
+    rota_escolhida = rotas[indice_rota]
+
+    # 🎯 já vem com rota, paradas e preco (tudo arrumado aqui!)
+    session["rota_escolhida"] = rota_escolhida["rota"]
+    session["preco_calculado"] = rota_escolhida["preco"]
+
+    return redirect(url_for("mapaVoo", codigo=codigo_voo))
+
+
+
 
 
 #-----------Mapa dos paises----------

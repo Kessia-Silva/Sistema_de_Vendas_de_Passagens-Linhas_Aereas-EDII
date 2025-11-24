@@ -89,5 +89,18 @@
         "Data": "2026-01-06",
         "Assentos_ocupados": [],
         "Milhas_percorridas": 11000
-    }
+    },
+    {
+    "Codigo_do_voo": "5555",
+    "Origem": "Estados Unidos",
+    "Destino": "Coreia",
+    "Preco_da_passagem": 7000,
+    "Tipo_de_aeronave": "Jato",
+    "Numero_de_assentos": 40,
+    "Hora": "19:00",
+    "Data": "15/11",
+    "Assentos_ocupados": [],
+    "Milhas_percorridas": 9000
+}
+
 ]
