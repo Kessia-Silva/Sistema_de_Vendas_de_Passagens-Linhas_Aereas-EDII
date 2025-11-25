@@ -126,3 +126,24 @@ class ArvoreBClientes:
 
         for filho in no.filhos:
             self.imprimir(filho, nivel + 1)
+
+    # ----------------------------------------
+    # LISTAR TODAS AS ENTRADAS EM ORDEM
+    # ----------------------------------------
+    def listar_chaves(self, no=None, lista=None):
+     if lista is None:
+        lista = []
+     if no is None:
+        no = self.raiz
+
+     i = 0
+     while i < len(no.chaves):
+        if not no.eh_folha:
+            self.listar_chaves(no.filhos[i], lista)
+        lista.append(no.chaves[i])   # EntradaIndice
+        i += 1
+
+     if not no.eh_folha:
+        self.listar_chaves(no.filhos[i], lista)
+
+     return lista

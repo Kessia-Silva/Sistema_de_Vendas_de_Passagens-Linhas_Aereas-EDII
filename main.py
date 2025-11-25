@@ -38,6 +38,8 @@ clientes = carregar_clientes()
 def home():
     return render_template("home.html")
 
+
+
 #-----------Rotas para Reservar um Voo ----------
 @app.route("/reservar_voo")   
 def reserva():
@@ -68,8 +70,7 @@ def confirmarReserva(codigo, assento):
     return render_template("confirmarReserva.html", voo=voo, assento=assento, rota=session.get("rota"),
     preco=session.get("preco"))
 
-
-# >>>>>>>>>>>>>>>>>> v v Manutenção v v <<<<<<<<<<<<<<<<<<<<
+# >>>>>>>>>>>>>>>>>> v Arvore Clientes e Passagens: Manutenção ok <<<<<<<<<<<<<<<<<<<<
 @app.route("/reservar_assento/<codigo>/<int:assento>", methods=["POST"])
 def reservar_assento(codigo, assento):
     global valor
@@ -169,7 +170,7 @@ def reservar_assento(codigo, assento):
 
 
 #-----------Rotas para Cancelar/Ve os Voos reservados ----------
-    # >>>>>>>>>>>>>>>>>>>>>>>>> v v - Manutenção - v v <<<<<<<<<<<<<<<<<<<< !
+# >>>>>>>>>>>>>>>>>> v Arvore Clientes e Passagens: Manutenção ok <<<<<<<<<<<<<<<<<<<<
 @app.route("/minhas_reservas")
 def minhas_reservas():
     cpf = session.get("cpf")
@@ -213,7 +214,7 @@ def minhas_reservas():
     )
 
 
-# >>>>>>>>>>>>>>>>>> v v Manutenção v v <<<<<<<<<<<<<<<<<<<<
+# >>>>>>>>>>>>>>>>>> Arvore Cliente e Passagens: Manutenção ok <<<<<<<<<<<<<<<<<<<<
 @app.route("/cancelar_reserva/<int:codigo_passagem>")
 def cancelar_reserva(codigo_passagem):
     cpf = session.get("cpf")
@@ -288,8 +289,6 @@ def cancelar_reserva(codigo_passagem):
 
 
 
-
-
 #-----------Rotas para Telas iniciais do sistema ----------
 @app.route("/InicialAdm")   
 def editar():
@@ -297,7 +296,7 @@ def editar():
         return redirect(url_for("login_adm"))  # bloqueia acesso direto
     return render_template("InicialAdm.html", voos_agendados = voos, email=session["email"])
 
-# >>>>>>>>>>>>>>>>>> v Arvore Cliente: Manutenção v <<<<<<<<<<<<<<<<<<<<
+# >>>>>>>>>>>>>>>>>> Arvore Cliente: Manutenção v <<<<<<<<<<<<<<<<<<<<
 @app.route("/login_user", methods=["GET", "POST"])
 def login_user():
     mensagem = ""  # só processa se o form for enviado
@@ -324,7 +323,7 @@ def login_user():
     return render_template("login_user.html", mensagem=mensagem)
 
 
-# >>>>>>>>>>>>>>>>>> Manutenção <<<<<<<<<<<<<<<<<<<<
+# >>>>>>>>>>>>>>>>>> Arvore Clientes: Manutenção ok <<<<<<<<<<<<<<<<<<<<
 @app.route("/homeUser")
 def homeUser():
     cpf = session.get("cpf")
@@ -534,7 +533,7 @@ def gerenciar_usuario():
     
     return render_template("gerenciar_usuario.html", usuarios=usuarios, usuario=usuario_selecionado, mensagem=mensagem)
 
-# >>>>>>>>>>>>>>>>>> Manutenção <<<<<<<<<<<<<<<<<<<<
+# >>>>>>>>>>>>>>>>>> Arvore Clientes: Manutenção ok <<<<<<<<<<<<<<<<<<<<
 @app.route("/consultar_cliente", methods=["GET", "POST"])
 def consultar_cliente():
     clientes_encontrados = []
@@ -549,7 +548,7 @@ def consultar_cliente():
         # ========================== BUSCA POR CPF ==========================
         if tipo_busca == "cpf":
             cpf = request.form.get("cpf_busca")
-            cliente = arvore_clientes.buscar(cpf)
+            cliente = retornarClientePorCPF(arvore_clientes, cpf)
 
             if cliente:
                 clientes_encontrados = [cliente]
@@ -559,12 +558,16 @@ def consultar_cliente():
         # ======================= BUSCA PELA INICIAL ========================
         elif tipo_busca == "inicial":
             inicial = request.form.get("inicial").upper()
-
-            todos = arvore_clientes.listar_chaves()
-            clientes_encontrados = [
-                c for c in todos
-                if c.nome.upper().startswith(inicial)
-            ]
+            
+            # Lista todos os CPFs do arquivo
+            lista_dicts = carregar_clientes()
+            
+            # Filtra clientes que começam com a inicial
+            for d in lista_dicts:
+                if d["nome"].upper().startswith(inicial):
+                    cliente = retornarClientePorCPF(arvore_clientes, d["cpf"])
+                    if cliente:
+                        clientes_encontrados.append(cliente)
 
             if not clientes_encontrados:
                 mensagem = f"Nenhum cliente inicia com a letra '{inicial}'."
@@ -572,12 +575,16 @@ def consultar_cliente():
         # ========================== BUSCA POR NOME =========================
         elif tipo_busca == "nome":
             nome_parcial = request.form.get("nome_busca").upper()
-
-            todos = arvore_clientes.listar_chaves()
-            clientes_encontrados = [
-                c for c in todos
-                if nome_parcial in c.nome.upper()
-            ]
+            
+            # Lista todos os CPFs do arquivo
+            lista_dicts = carregar_clientes()
+            
+            # Filtra clientes que contenham o nome parcial
+            for d in lista_dicts:
+                if nome_parcial in d["nome"].upper():
+                    cliente = retornarClientePorCPF(arvore_clientes, d["cpf"])
+                    if cliente:
+                        clientes_encontrados.append(cliente)
 
             if not clientes_encontrados:
                 mensagem = "Nenhum cliente encontrado com esse nome."
@@ -831,11 +838,21 @@ def mapa_grafico_voos():
     criar_mapa_voos(voos, coordenadas_aeroportos)
     return render_template("mapa_grafico_voos.html")
 
-# >>>>>>>>>>>>>>>>>> Manutenção <<<<<<<<<<<<<<<<<<<<
+# >>>>>>>>>>>>>>>>>> Arvore Clientes: Manutenção ok <<<<<<<<<<<<<<<<<<<<
 @app.route("/listar_usuarios")
 def listar_usuarios():
     arvore_clientes = reconstruir_arvore_clientes()
-    usuarios = arvore_clientes.listar_chaves()
+    
+    # Listar todas as chaves (EntradaIndice) da árvore
+    entradas = arvore_clientes.listar_chaves()
+    
+    # Para exibir no template, vamos carregar os dados do arquivo na posição correta
+    lista_clientes = carregar_clientes()
+    usuarios = []
+    for e in entradas:
+        if 0 <= e.pos < len(lista_clientes):
+            usuarios.append(lista_clientes[e.pos])
+    
     return render_template("listar_usuarios.html", usuarios=usuarios)
 
 # >>>>>>>>>>>>>>>>>> Arvore Reservas: Manutenção Resolvida <<<<<<<<<<<<<<<<<<<<
