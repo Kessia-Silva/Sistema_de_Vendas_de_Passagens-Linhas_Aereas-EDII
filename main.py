@@ -2,9 +2,9 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, s
 from arquivos.ManipulandoArquivos.manipular_usuarios import carregar_usuarios, salvar_usuarios # chamando o arquivo de usuarios
 from arquivos.ManipulandoArquivos.manipular_voos import carregar_voos, salvar_voos # chamando as funções para manipular o arquivo de voos
 from arquivos.ManipulandoArquivos.manipular_adm import carregar_adms #  chamando as funções para manipular o arquivo de adms
-from arquivos.Arvores.ArvoreB_VendaPassagens import arvore, reconstruir_arvore #  chamando as funções para manipular Arvore de passagens
+from arquivos.Arvores.ArvoreB_VendaPassagens import arvore, reconstruir_arvore, retornarInformacoesRegistro, inserirArvore#  chamando as funções para manipular Arvore de passagens
 from arquivos.ManipulandoArquivos.manipular_Informacoes import carregar_valor, salvar_valor #  chamando as funções para manipular que salvar o codigo de passagens
-from arquivos.ManipulandoArquivos.manipular_Reservas import carregar_reservas, salvar_reservas #  chamando as funções para manipular o arquivo de reservas 
+from arquivos.ManipulandoArquivos.manipular_Reservas import carregar_reservas, salvar_reservas, remover_reserva_do_arquivo #  chamando as funções para manipular o arquivo de reservas 
 from arquivos.Classes.ClasseReserva import RegistroPassagem # Importando classe de Reserva
 from arquivos.respostas import respostas # Importando o arquivo de respostas do ChatBot
 from arquivos.Arvores.ArvoreB_RegistrarClientes import arvore_clientes, reconstruir_arvore_clientes #  chamando as funções para manipular Arvore de clientes
@@ -91,7 +91,7 @@ def reservar_assento(codigo, assento):
         voo["Assentos_ocupados"].append(str(assento))
         salvar_voos(voos)
 
-        # 2. Criar nova reserva com código incremental
+        # 2. Criar nova reserva
         valor += 1
         salvar_valor(valor)
 
@@ -99,35 +99,35 @@ def reservar_assento(codigo, assento):
             codigo_passagem=valor,
             cpf=cpf,
             codigo_voo=codigo,
-            assento=str(assento)
+            assento=str(assento),
+            preco=session.get("preco"),
+            rota=session.get("rota")
         )
 
-        arvore_passagens.inserir(registro)
-
-       # 3. salvar reserva no arquivo global
+        # 3. Salvar reserva no arquivo JSON
         reservas.append({
-        "codigo_passagem": registro.codigo_passagem,
-        "cpf": registro.cpf,
-        "codigo_voo": registro.codigo_voo,
-        "assento": registro.assento,
-        "preco": session.get("preco"),
-        "rota": session.get("rota")
-       })
+            "codigo_passagem": registro.codigo_passagem,
+            "cpf": registro.cpf,
+            "codigo_voo": registro.codigo_voo,
+            "assento": registro.assento,
+            "preco": registro.preco,
+            "rota": registro.rota
+        })
         salvar_reservas(reservas)
-        print("DEBUG SESSAO:", session.get("rota"), session.get("preco"))
 
+        # 4. Inserir na árvore B (a posição será calculada automaticamente)
+        inserirArvore(arvore_passagens, registro.codigo_passagem)
 
-
-        # 4. Atualizar objeto Cliente
+        # 5. Atualizar cliente (memória temporária)
         cliente.reservas.append(registro.codigo_passagem)
         cliente.datas.append(voo["Data"])
 
-        # 5. Recalcular milhas
+        # 6. Recalcular milhas
         total_milhas = 0
-        arvore_passagens = reconstruir_arvore()
+        arvore_passagens = reconstruir_arvore()  # Árvore atualizada após o insert
 
         for cod in cliente.reservas:
-            reserva_temp = arvore_passagens.buscar(cod)
+            reserva_temp = retornarInformacoesRegistro(arvore_passagens, cod)
             if reserva_temp:
                 voo_temp = next((v for v in voos 
                     if str(v["Codigo_do_voo"]) == reserva_temp.codigo_voo), None)
@@ -138,45 +138,51 @@ def reservar_assento(codigo, assento):
         cliente.milhas = total_milhas
         session['milhas'] = total_milhas
 
-        # 6. Salvar TODOS os clientes corretamente
+        # 7. Salvar todos os clientes
         clientes_dicts = clientes_para_dict(arvore_clientes.listar_chaves())
         salvar_clientes(clientes_dicts)
 
-        # 7. Reconstruir novamente
+        # 8. Reconstruir novamente a árvore de clientes
         arvore_clientes = reconstruir_arvore_clientes()
 
     return "", 204
 
 
+
 #-----------Rotas para Cancelar/Ve os Voos reservados ----------
-      # >>>>>>>>>>>>>>>>>> Manutenção <<<<<<<<<<<<<<<<<<<<
+    # >>>>>>>>>>>>>>>>>>>>>>>>> v v - Manutenção - v v <<<<<<<<<<<<<<<<<<<< !
 @app.route("/minhas_reservas")
 def minhas_reservas():
     cpf = session.get("cpf")
     if not cpf:
         return redirect(url_for("login_user"))
 
-    # Reconstruir a árvore de clientes
+    # Reconstruir as árvores
     arvore_clientes = reconstruir_arvore_clientes()
-   # mudança minha
     arvore_passagens = reconstruir_arvore()
 
+    # Buscar cliente
     cliente = arvore_clientes.buscar(cpf)
-
     if not cliente:
         return redirect(url_for("login_user"))
 
     reservas_usuarios = []
     voos_encontrados = []
 
-   
-    arvore_passagens = reconstruir_arvore()
+    # Para cada código de passagem do cliente
     for codigo_passagem in cliente.reservas:
-        reserva = arvore_passagens.buscar(codigo_passagem)
+
+        # Agora passando a árvore !
+        reserva = retornarInformacoesRegistro(arvore_passagens, codigo_passagem)
+
         if reserva:
             reservas_usuarios.append(reserva)
 
-            voo = next((v for v in voos if str(v["Codigo_do_voo"]) == reserva.codigo_voo), None)
+            # Recuperar voo correspondente
+            voo = next(
+                (v for v in voos if str(v["Codigo_do_voo"]) == reserva.codigo_voo),
+                None
+            )
             if voo:
                 voos_encontrados.append(voo)
 
@@ -184,9 +190,9 @@ def minhas_reservas():
         "minhas_reservas.html",
         reservas_usuario=reservas_usuarios,
         voos_encontrados=voos_encontrados,
- # eu
         cliente=cliente
     )
+
 
 def clientes_para_dict(clientes_objetos):
     lista_dicts = []
@@ -200,62 +206,58 @@ def clientes_para_dict(clientes_objetos):
         })
     return lista_dicts
 
-# >>>>>>>>>>>>>>>>>> Manutenção <<<<<<<<<<<<<<<<<<<<
+# >>>>>>>>>>>>>>>>>> v v Manutenção v v <<<<<<<<<<<<<<<<<<<<
 @app.route("/cancelar_reserva/<int:codigo_passagem>")
 def cancelar_reserva(codigo_passagem):
-    global reservas
     cpf = session.get("cpf")
     if not cpf:
         return redirect(url_for("login_user"))
 
-    # Reconstruir árvores
     arvore_clientes = reconstruir_arvore_clientes()
     arvore_passagens = reconstruir_arvore()
 
-    # 1. Buscar a reserva na árvore de passagens
-    reserva = arvore_passagens.buscar(codigo_passagem)
+    # 1. Ler reserva antes de mexer no arquivo
+    reserva = retornarInformacoesRegistro(arvore_passagens, codigo_passagem)
     if not reserva:
         return redirect(url_for("minhas_reservas"))
 
-    # 2. Liberar o assento no voo
-    codigo_voo = reserva.codigo_voo
-    assento = reserva.assento
-    voo = next((v for v in voos if str(v["Codigo_do_voo"]) == codigo_voo), None)
-    if voo and assento in voo["Assentos_ocupados"]:
-        voo["Assentos_ocupados"].remove(assento)
+    # 2. Liberar assento
+    voo = next((v for v in voos if str(v["Codigo_do_voo"]) == reserva.codigo_voo), None)
+    if voo and reserva.assento in voo["Assentos_ocupados"]:
+        voo["Assentos_ocupados"].remove(reserva.assento)
     salvar_voos(voos)
 
-    # 3. Remover da lista de reservas do cliente
+    # 3. Remover do cliente
     cliente = arvore_clientes.buscar(cpf)
     if cliente and codigo_passagem in cliente.reservas:
-        index = cliente.reservas.index(codigo_passagem)
-        cliente.reservas.pop(index)
-        cliente.datas.pop(index)  # remove também a data correspondente
-        # Subtrair milhas da reserva cancelada
+        i = cliente.reservas.index(codigo_passagem)
+        cliente.reservas.pop(i)
+        cliente.datas.pop(i)
 
-    total_milhas = 0
-    arvore_passagens = reconstruir_arvore()  # garante que está atualizada
-    for cod_passagem in cliente.reservas:  # agora só percorre reservas ativas
-        reserva_temp = arvore_passagens.buscar(cod_passagem)
-        if reserva_temp:
-             voo_temp = next((v for v in voos if str(v["Codigo_do_voo"]) == reserva_temp.codigo_voo), None)
-             if voo_temp:
-                total_milhas += voo_temp["Milhas_percorridas"]
+    # 4. Remover do arquivo AGORA
+    remover_reserva_do_arquivo(codigo_passagem)
 
-    cliente.milhas = total_milhas
-    session['milhas'] = cliente.milhas  # atualiza na sessão
+    # 5. RECONSTRUIR ÁRVORE AGORA pois o arquivo mudou
+    arvore_passagens = reconstruir_arvore()
 
-        
-        # Salvar clientes atualizados
+    # 6. Recalcular milhas
+    total = 0
+    for cod in cliente.reservas:
+        r = retornarInformacoesRegistro(arvore_passagens, cod)
+        if r:
+            voo_temp = next((v for v in voos if str(v["Codigo_do_voo"]) == r.codigo_voo), None)
+            if voo_temp:
+                total += voo_temp["Milhas_percorridas"]
+
+    cliente.milhas = total
+    session["milhas"] = total
+
+    # 7. Salvar clientes
     clientes_dicts = clientes_para_dict(arvore_clientes.listar_chaves())
     salvar_clientes(clientes_dicts)
 
-
-    # 4. Remover da lista global de reservas
-    reservas = [r for r in reservas if r.get("codigo_passagem") != codigo_passagem]
-    salvar_reservas(reservas)
-
     return redirect(url_for("minhas_reservas"))
+
 
 
 

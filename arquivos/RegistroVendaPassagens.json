@@ -1,16 +1,5 @@
 [
     {
-        "codigo_passagem": 1098,
-        "cpf": "77777777777",
-        "codigo_voo": "1122",
-        "assento": "10",
-        "preco": 9800,
-        "rota": [
-            "Brasil",
-            "Alemanha"
-        ]
-    },
-    {
         "codigo_passagem": 1099,
         "cpf": "77777777777",
         "codigo_voo": "9987",
@@ -19,6 +8,32 @@
         "rota": [
             "Brasil",
             "França"
+        ]
+    },
+    {
+        "codigo_passagem": 1102,
+        "cpf": "22222222222",
+        "codigo_voo": "3413",
+        "assento": "23",
+        "preco": 8000.0,
+        "rota": [
+            "Brasil",
+            "Estados Unidos",
+            "Japão",
+            "Coreia"
+        ]
+    },
+    {
+        "codigo_passagem": 1103,
+        "cpf": "22222222222",
+        "codigo_voo": "3413",
+        "assento": "12",
+        "preco": 8000.0,
+        "rota": [
+            "Brasil",
+            "Estados Unidos",
+            "Japão",
+            "Coreia"
         ]
     }
 ]

@@ -25,7 +25,6 @@ def retornarInformacoesRegistro(arvore, chave):
     # 2. Carrega todas as reservas do arquivo
     lista = carregar_reservas()
 
-    # Segurança: posição pode estar fora do arquivo (caso tenha sido apagado)
     if posicao < 0 or posicao >= len(lista):
         return None
 
@@ -41,6 +40,25 @@ def retornarInformacoesRegistro(arvore, chave):
         dados["preco"],
         dados["rota"]
     )
+
+def inserirArvore(arvore, chave):
+    # 1. Carregar lista do arquivo
+    lista = carregar_reservas()
+
+    # 2. Calcular posição pela própria ordem do arquivo
+    posicao = next(
+        (i for i, r in enumerate(lista) if r["codigo_passagem"] == chave),
+        None
+    )
+
+    # 3. Se não achar, não insere
+    if posicao is None:
+        return False
+
+    # 4. Inserir chave + posição na árvore B
+    arvore.inserir(chave, posicao)
+    return True
+
 
 
 # Criar a árvore
