@@ -8,7 +8,7 @@ from arquivos.ManipulandoArquivos.manipular_Reservas import carregar_reservas, s
 from arquivos.Classes.ClasseReserva import RegistroPassagem # Importando classe de Reserva
 from arquivos.respostas import respostas # Importando o arquivo de respostas do ChatBot
 from arquivos.Arvores.ArvoreB_RegistrarClientes import arvore_clientes, reconstruir_arvore_clientes, retornarClientePorCPF #  chamando as funções para manipular Arvore de clientes
-from arquivos.ManipulandoArquivos.manipularClientes import salvar_clientes #  chamando as funções para manipular o arquivo de clientes
+from arquivos.ManipulandoArquivos.manipularClientes import salvar_clientes, carregar_clientes #  chamando as funções para manipular o arquivo de clientes
 from arquivos.ManipulandoArquivos.manipular_coordenadas import carregar_coordenadas
 
 import os
@@ -28,6 +28,8 @@ adms = carregar_adms()
 usuarios = carregar_usuarios()
 reservas = carregar_reservas()
 valor = carregar_valor()
+clientes = carregar_clientes()
+
 
 
 # Definindo Rotas
@@ -77,7 +79,7 @@ def reservar_assento(codigo, assento):
     arvore_clientes = reconstruir_arvore_clientes()
     arvore_passagens = reconstruir_arvore()
 
-    cliente = arvore_clientes.buscar(cpf)
+    cliente = retornarClientePorCPF(arvore_clientes, cpf) 
     if cliente is None:
         return "Cliente não encontrado", 404
 
@@ -116,16 +118,16 @@ def reservar_assento(codigo, assento):
         })
         salvar_reservas(reservas)
 
-        # 4. Inserir na árvore B (a posição será calculada automaticamente)
+        # 4. Inserir na árvore B
         inserirArvore(arvore_passagens, registro.codigo_passagem)
 
-        # 5. Atualizar cliente (memória temporária)
+        # 5. Atualizar cliente em memória
         cliente.reservas.append(registro.codigo_passagem)
         cliente.datas.append(voo["Data"])
 
         # 6. Recalcular milhas
         total_milhas = 0
-        arvore_passagens = reconstruir_arvore()  # Árvore atualizada após o insert
+        arvore_passagens = reconstruir_arvore()
 
         for cod in cliente.reservas:
             reserva_temp = retornarInformacoesRegistro(arvore_passagens, cod)
@@ -139,14 +141,30 @@ def reservar_assento(codigo, assento):
         cliente.milhas = total_milhas
         session['milhas'] = total_milhas
 
-        # 7. Salvar todos os clientes
-        clientes_dicts = clientes_para_dict(arvore_clientes.listar_chaves())
-        salvar_clientes(clientes_dicts)
+        # 7. Recarregar lista de clientes do arquivo
+        lista_clientes = carregar_clientes()
 
-        # 8. Reconstruir novamente a árvore de clientes
+        # 8. Posição correta do cliente no arquivo obtida pela árvore
+        pos = arvore_clientes.buscar(cliente.cpf)
+
+        if pos is not None and 0 <= pos < len(lista_clientes):
+            # 9. Atualizar cliente na posição correta
+            lista_clientes[pos] = {
+                "cpf": cliente.cpf,
+                "nome": cliente.nome,
+                "reservas": cliente.reservas,
+                "datas": cliente.datas,
+                "milhas": cliente.milhas
+            }
+
+            # 10. Salvar lista atualizada
+            salvar_clientes(lista_clientes)
+
+        # 11. Reconstruir árvore de clientes após salvar
         arvore_clientes = reconstruir_arvore_clientes()
 
     return "", 204
+
 
 
 
@@ -163,7 +181,7 @@ def minhas_reservas():
     arvore_passagens = reconstruir_arvore()
 
     # Buscar cliente
-    cliente = arvore_clientes.buscar(cpf)
+    cliente = retornarClientePorCPF(arvore_clientes,cpf)
     if not cliente:
         return redirect(url_for("login_user"))
 
@@ -217,16 +235,16 @@ def cancelar_reserva(codigo_passagem):
     salvar_voos(voos)
 
     # 3. Remover do cliente
-    cliente = arvore_clientes.buscar(cpf)
+    cliente = retornarClientePorCPF(arvore_clientes, cpf)
     if cliente and codigo_passagem in cliente.reservas:
         i = cliente.reservas.index(codigo_passagem)
         cliente.reservas.pop(i)
         cliente.datas.pop(i)
 
-    # 4. Remover do arquivo AGORA
+    # 4. Remover do arquivo de reservas
     remover_reserva_do_arquivo(codigo_passagem)
 
-    # 5. RECONSTRUIR ÁRVORE AGORA pois o arquivo mudou
+    # 5. Reconstruir árvore de passagens
     arvore_passagens = reconstruir_arvore()
 
     # 6. Recalcular milhas
@@ -241,11 +259,32 @@ def cancelar_reserva(codigo_passagem):
     cliente.milhas = total
     session["milhas"] = total
 
-    # 7. Salvar clientes
-    clientes_dicts = clientes_para_dict(arvore_clientes.listar_chaves())
-    salvar_clientes(clientes_dicts)
+    # >>>>>>>>>>>>>> Ajuste da árvore de clientes <<<<<<<<<<<<
+
+    # 7. Recarregar lista de clientes do arquivo
+    lista_clientes = carregar_clientes()
+
+    # 8. Obter posição correta na árvore
+    pos = arvore_clientes.buscar(cliente.cpf)
+
+    if pos is not None and 0 <= pos < len(lista_clientes):
+        # 9. Atualizar cliente na posição correta
+        lista_clientes[pos] = {
+            "cpf": cliente.cpf,
+            "nome": cliente.nome,
+            "reservas": cliente.reservas,
+            "datas": cliente.datas,
+            "milhas": cliente.milhas
+        }
+
+        # 10. Salvar lista atualizada
+        salvar_clientes(lista_clientes)
+
+    # 11. Reconstruir árvore de clientes após salvar
+    arvore_clientes = reconstruir_arvore_clientes()
 
     return redirect(url_for("minhas_reservas"))
+
 
 
 
@@ -277,6 +316,7 @@ def login_user():
                 if cliente:
                     session["cpf"] = cliente.cpf  # guarda o cpf do cliente na sessão
                     session["email"] = usuario["email"]
+                    session["milhas"] = cliente.milhas 
                     return redirect(url_for("homeUser"))
 
         mensagem = "Email ou senha incorretos!"
@@ -292,7 +332,7 @@ def homeUser():
         return redirect(url_for("login_user"))
     
     arvore_clientes = reconstruir_arvore_clientes()
-    cliente = arvore_clientes.buscar(cpf)
+    cliente = retornarClientePorCPF(arvore_clientes, cpf)
     email = session.get("email")
     return render_template("homeUser.html", cliente=cliente, email=email)
 
