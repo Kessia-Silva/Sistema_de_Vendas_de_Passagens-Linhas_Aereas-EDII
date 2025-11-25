@@ -7,7 +7,7 @@ from arquivos.ManipulandoArquivos.manipular_Informacoes import carregar_valor, s
 from arquivos.ManipulandoArquivos.manipular_Reservas import carregar_reservas, salvar_reservas, remover_reserva_do_arquivo #  chamando as funções para manipular o arquivo de reservas 
 from arquivos.Classes.ClasseReserva import RegistroPassagem # Importando classe de Reserva
 from arquivos.respostas import respostas # Importando o arquivo de respostas do ChatBot
-from arquivos.Arvores.ArvoreB_RegistrarClientes import arvore_clientes, reconstruir_arvore_clientes #  chamando as funções para manipular Arvore de clientes
+from arquivos.Arvores.ArvoreB_RegistrarClientes import arvore_clientes, reconstruir_arvore_clientes, retornarClientePorCPF #  chamando as funções para manipular Arvore de clientes
 from arquivos.ManipulandoArquivos.manipularClientes import salvar_clientes #  chamando as funções para manipular o arquivo de clientes
 from arquivos.ManipulandoArquivos.manipular_coordenadas import carregar_coordenadas
 
@@ -65,6 +65,7 @@ def confirmarReserva(codigo, assento):
 
     return render_template("confirmarReserva.html", voo=voo, assento=assento, rota=session.get("rota"),
     preco=session.get("preco"))
+
 
 # >>>>>>>>>>>>>>>>>> v v Manutenção v v <<<<<<<<<<<<<<<<<<<<
 @app.route("/reservar_assento/<codigo>/<int:assento>", methods=["POST"])
@@ -194,18 +195,6 @@ def minhas_reservas():
     )
 
 
-def clientes_para_dict(clientes_objetos):
-    lista_dicts = []
-    for c in clientes_objetos:
-        lista_dicts.append({
-            "cpf": c.cpf,
-            "nome": c.nome,
-            "reservas": c.reservas,
-            "datas": c.datas,
-            "milhas": c.milhas
-        })
-    return lista_dicts
-
 # >>>>>>>>>>>>>>>>>> v v Manutenção v v <<<<<<<<<<<<<<<<<<<<
 @app.route("/cancelar_reserva/<int:codigo_passagem>")
 def cancelar_reserva(codigo_passagem):
@@ -269,7 +258,7 @@ def editar():
         return redirect(url_for("login_adm"))  # bloqueia acesso direto
     return render_template("InicialAdm.html", voos_agendados = voos, email=session["email"])
 
-# >>>>>>>>>>>>>>>>>> Manutenção <<<<<<<<<<<<<<<<<<<<
+# >>>>>>>>>>>>>>>>>> v Arvore Cliente: Manutenção v <<<<<<<<<<<<<<<<<<<<
 @app.route("/login_user", methods=["GET", "POST"])
 def login_user():
     mensagem = ""  # só processa se o form for enviado
@@ -277,11 +266,14 @@ def login_user():
         email = request.form.get("email")
         senha = request.form.get("senha")
 
+        # Reconstruir árvore de clientes
+        arvore_clientes = reconstruir_arvore_clientes()
+
         # Verifica email e senha
         for usuario in usuarios:
             if usuario["email"] == email and usuario["senha"] == senha:
                 # Buscar o cliente na árvore
-                cliente = arvore_clientes.buscar(usuario["cpf"])  # usando a árvore de clientes
+                cliente = retornarClientePorCPF(arvore_clientes, usuario["cpf"])
                 if cliente:
                     session["cpf"] = cliente.cpf  # guarda o cpf do cliente na sessão
                     session["email"] = usuario["email"]
@@ -290,6 +282,7 @@ def login_user():
         mensagem = "Email ou senha incorretos!"
 
     return render_template("login_user.html", mensagem=mensagem)
+
 
 # >>>>>>>>>>>>>>>>>> Manutenção <<<<<<<<<<<<<<<<<<<<
 @app.route("/homeUser")
