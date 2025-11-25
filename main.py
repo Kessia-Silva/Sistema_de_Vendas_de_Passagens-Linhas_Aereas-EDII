@@ -66,6 +66,7 @@ def confirmarReserva(codigo, assento):
     return render_template("confirmarReserva.html", voo=voo, assento=assento, rota=session.get("rota"),
     preco=session.get("preco"))
 
+# >>>>>>>>>>>>>>>>>> Manutenção  <<<<<<<<<<<<<<<<<<<<
 @app.route("/reservar_assento/<codigo>/<int:assento>", methods=["POST"])
 def reservar_assento(codigo, assento):
     global valor
@@ -148,6 +149,7 @@ def reservar_assento(codigo, assento):
 
 
 #-----------Rotas para Cancelar/Ve os Voos reservados ----------
+      # >>>>>>>>>>>>>>>>>> Manutenção <<<<<<<<<<<<<<<<<<<<
 @app.route("/minhas_reservas")
 def minhas_reservas():
     cpf = session.get("cpf")
@@ -156,7 +158,7 @@ def minhas_reservas():
 
     # Reconstruir a árvore de clientes
     arvore_clientes = reconstruir_arvore_clientes()
-# mudança minha
+   # mudança minha
     arvore_passagens = reconstruir_arvore()
 
     cliente = arvore_clientes.buscar(cpf)
@@ -198,7 +200,7 @@ def clientes_para_dict(clientes_objetos):
         })
     return lista_dicts
 
-
+# >>>>>>>>>>>>>>>>>> Manutenção <<<<<<<<<<<<<<<<<<<<
 @app.route("/cancelar_reserva/<int:codigo_passagem>")
 def cancelar_reserva(codigo_passagem):
     global reservas
@@ -265,6 +267,7 @@ def editar():
         return redirect(url_for("login_adm"))  # bloqueia acesso direto
     return render_template("InicialAdm.html", voos_agendados = voos, email=session["email"])
 
+# >>>>>>>>>>>>>>>>>> Manutenção <<<<<<<<<<<<<<<<<<<<
 @app.route("/login_user", methods=["GET", "POST"])
 def login_user():
     mensagem = ""  # só processa se o form for enviado
@@ -286,7 +289,7 @@ def login_user():
 
     return render_template("login_user.html", mensagem=mensagem)
 
-
+# >>>>>>>>>>>>>>>>>> Manutenção <<<<<<<<<<<<<<<<<<<<
 @app.route("/homeUser")
 def homeUser():
     cpf = session.get("cpf")
@@ -438,6 +441,7 @@ def remover_voo():
 def listar_voos():
     return render_template("listar_voos.html", voos=voos)
 
+
 @app.route("/gerenciar_usuario", methods=["GET", "POST"])
 def gerenciar_usuario():
     mensagem = ""
@@ -495,6 +499,7 @@ def gerenciar_usuario():
     
     return render_template("gerenciar_usuario.html", usuarios=usuarios, usuario=usuario_selecionado, mensagem=mensagem)
 
+# >>>>>>>>>>>>>>>>>> Manutenção <<<<<<<<<<<<<<<<<<<<
 @app.route("/consultar_cliente", methods=["GET", "POST"])
 def consultar_cliente():
     clientes_encontrados = []
@@ -735,7 +740,6 @@ def simular_conexoes(codigo_voo):
     )
 
 
-
 @app.route("/escolher_rota/<int:codigo_voo>/<int:indice_rota>")
 def escolher_rota(codigo_voo, indice_rota):
 
@@ -749,9 +753,6 @@ def escolher_rota(codigo_voo, indice_rota):
     session["preco"] = rota_escolhida["preco"]
 
     return redirect(url_for("mapaVoo", codigo=codigo_voo))
-
-
-
 
 
 #-----------Mapa dos paises----------
@@ -795,12 +796,14 @@ def mapa_grafico_voos():
     criar_mapa_voos(voos, coordenadas_aeroportos)
     return render_template("mapa_grafico_voos.html")
 
+# >>>>>>>>>>>>>>>>>> Manutenção <<<<<<<<<<<<<<<<<<<<
 @app.route("/listar_usuarios")
 def listar_usuarios():
     arvore_clientes = reconstruir_arvore_clientes()
     usuarios = arvore_clientes.listar_chaves()
     return render_template("listar_usuarios.html", usuarios=usuarios)
 
+# >>>>>>>>>>>>>>>>>> Manutenção <<<<<<<<<<<<<<<<<<<<
 @app.route("/relatorios")
 def relatorios():
     # Reconstruir árvores ou carregar dados
