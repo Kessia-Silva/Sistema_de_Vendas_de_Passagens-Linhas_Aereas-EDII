@@ -66,7 +66,7 @@ def confirmarReserva(codigo, assento):
     return render_template("confirmarReserva.html", voo=voo, assento=assento, rota=session.get("rota"),
     preco=session.get("preco"))
 
-# >>>>>>>>>>>>>>>>>> Manutenção  <<<<<<<<<<<<<<<<<<<<
+# >>>>>>>>>>>>>>>>>> v v Manutenção v v <<<<<<<<<<<<<<<<<<<<
 @app.route("/reservar_assento/<codigo>/<int:assento>", methods=["POST"])
 def reservar_assento(codigo, assento):
     global valor
@@ -808,26 +808,27 @@ def listar_usuarios():
 # >>>>>>>>>>>>>>>>>> Manutenção <<<<<<<<<<<<<<<<<<<<
 @app.route("/relatorios")
 def relatorios():
-    # Reconstruir árvores ou carregar dados
     arvore_passagens = reconstruir_arvore()
     
-    # Listas que vamos popular
     destinos = {}
     voos_realizados = 0
     reservas_totais = 0
 
-    # Iterar sobre todas as reservas
-    for reserva in arvore_passagens.listar_chaves():
+    # Cada elemento é um EntradaIndice
+    for entrada in arvore_passagens.listar_chaves():
+        codigo = entrada.chave   # <-- pegamos a chave de verdade
+
+        reserva = retornarInformacoesRegistro(arvore_passagens, codigo)
+        if not reserva:
+            continue
+
         reservas_totais += 1
         voo = next((v for v in voos if str(v["Codigo_do_voo"]) == reserva.codigo_voo), None)
         if voo:
             voos_realizados += 1
             destino = voo["Destino"]
-            if destino not in destinos:
-                destinos[destino] = 0
-            destinos[destino] += 1
+            destinos[destino] = destinos.get(destino, 0) + 1
 
-    # Ordenar destinos mais populares
     destinos_ordenados = sorted(destinos.items(), key=lambda x: x[1], reverse=True)
 
     return render_template(
@@ -836,6 +837,7 @@ def relatorios():
         reservas_totais=reservas_totais,
         destinos_ordenados=destinos_ordenados
     )
+
 
 # Rodar a aplicação
 if __name__ == "__main__":
