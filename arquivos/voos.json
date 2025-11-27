@@ -8,7 +8,10 @@
         "Numero_de_assentos": 60,
         "Hora": "10:10",
         "Data": "20/11",
-        "Assentos_ocupados": [],
+        "Assentos_ocupados": [
+            "14",
+            "2"
+        ],
         "Milhas_percorridas": 10000
     },
     {
@@ -20,7 +23,9 @@
         "Numero_de_assentos": 80,
         "Hora": "15:30",
         "Data": "22/11",
-        "Assentos_ocupados": [],
+        "Assentos_ocupados": [
+            "19"
+        ],
         "Milhas_percorridas": 9000
     },
     {
@@ -32,7 +37,9 @@
         "Numero_de_assentos": 30,
         "Hora": "08:00",
         "Data": "25/11",
-        "Assentos_ocupados": [],
+        "Assentos_ocupados": [
+            "10"
+        ],
         "Milhas_percorridas": 8000
     },
     {
@@ -44,7 +51,9 @@
         "Numero_de_assentos": 90,
         "Hora": "12:45",
         "Data": "28/11",
-        "Assentos_ocupados": [],
+        "Assentos_ocupados": [
+            "15"
+        ],
         "Milhas_percorridas": 7000
     },
     {
@@ -166,5 +175,17 @@
         "Data": "06/12",
         "Assentos_ocupados": [],
         "Milhas_percorridas": 7000
+    },
+    {
+        "Codigo_do_voo": "12331",
+        "Origem": "Alemanha",
+        "Destino": "Brasil",
+        "Preco_da_passagem": 8400.0,
+        "Tipo_de_aeronave": "Boen",
+        "Numero_de_assentos": 100,
+        "Hora": "08:40",
+        "Data": "2025-11-06",
+        "Assentos_ocupados": [],
+        "Milhas_percorridas": 1200
     }
 ]

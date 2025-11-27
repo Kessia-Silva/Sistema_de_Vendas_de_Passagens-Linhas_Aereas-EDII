@@ -9,16 +9,28 @@
     {
         "cpf": "22222222222",
         "nome": "antonela",
-        "reservas": [],
-        "datas": [],
-        "milhas": 0
+        "reservas": [
+            1110,
+            1111
+        ],
+        "datas": [
+            "22/11",
+            "25/11"
+        ],
+        "milhas": 17000
     },
     {
         "cpf": "33333333333",
         "nome": "rafael",
-        "reservas": [],
-        "datas": [],
-        "milhas": 0
+        "reservas": [
+            1113,
+            1114
+        ],
+        "datas": [
+            "28/11",
+            "20/11"
+        ],
+        "milhas": 17000
     },
     {
         "cpf": "44444444444",
@@ -44,8 +56,12 @@
     {
         "cpf": "77777777777",
         "nome": "felipe",
-        "reservas": [],
-        "datas": [],
-        "milhas": 0
+        "reservas": [
+            1109
+        ],
+        "datas": [
+            "20/11"
+        ],
+        "milhas": 10000
     }
 ]

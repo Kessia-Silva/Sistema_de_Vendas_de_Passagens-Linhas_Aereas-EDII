@@ -1,1 +1,74 @@
-[]
+[
+    {
+        "codigo_passagem": 1108,
+        "cpf": "77777777777",
+        "codigo_voo": "3413",
+        "assento": "18",
+        "preco": 9000.0,
+        "rota": [
+            "Brasil",
+            "Japão",
+            "Coreia"
+        ]
+    },
+    {
+        "codigo_passagem": 1109,
+        "cpf": "77777777777",
+        "codigo_voo": "3413",
+        "assento": "14",
+        "preco": 10000,
+        "rota": [
+            "Brasil",
+            "Coreia"
+        ]
+    },
+    {
+        "codigo_passagem": 1110,
+        "cpf": "22222222222",
+        "codigo_voo": "4521",
+        "assento": "19",
+        "preco": 5950.0,
+        "rota": [
+            "Brasil",
+            "França",
+            "Alemanha",
+            "Coreia",
+            "Japão"
+        ]
+    },
+    {
+        "codigo_passagem": 1111,
+        "cpf": "22222222222",
+        "codigo_voo": "7689",
+        "assento": "10",
+        "preco": 10800.0,
+        "rota": [
+            "Brasil",
+            "França",
+            "Estados Unidos"
+        ]
+    },
+    {
+        "codigo_passagem": 1113,
+        "cpf": "33333333333",
+        "codigo_voo": "9987",
+        "assento": "15",
+        "preco": 9500,
+        "rota": [
+            "Brasil",
+            "França"
+        ]
+    },
+    {
+        "codigo_passagem": 1114,
+        "cpf": "33333333333",
+        "codigo_voo": "3413",
+        "assento": "2",
+        "preco": 9000.0,
+        "rota": [
+            "Brasil",
+            "Japão",
+            "Coreia"
+        ]
+    }
+]

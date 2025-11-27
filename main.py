@@ -39,12 +39,107 @@ def home():
     return render_template("home.html")
 
 
-
-#-----------Rotas para Reservar um Voo ----------
+#>>>>>>>>>>>>>>>>>>>>>>Rotas para USER: Cliente <<<<<<<<<<<<<<<<<<<
+#-----------Rota para Reservar um Voo ----------
 @app.route("/reservar_voo")   
 def reserva():
     return render_template("reservar_voo.html", voos_agendados = voos)
 
+# Função para acessar todos os possiveis caminhos para um orta pelo grafo
+def listar_todos_os_caminhos(origem, destino):
+    g = criar_grafo_voos(voos)
+
+    # Mapear nome → índice e índice → nome
+    nome_para_indice = {name: i for i, name in enumerate(g.vs["name"])}
+
+    if origem not in nome_para_indice or destino not in nome_para_indice:
+        return None
+
+    indice_origem = nome_para_indice[origem]
+    indice_destino = nome_para_indice[destino]
+
+    todas_rotas = []
+    rota_atual = []
+
+    def dfs(atual):
+        rota_atual.append(atual)
+
+        if atual == indice_destino:
+            todas_rotas.append(list(rota_atual))
+        else:
+            for vizinho in g.successors(atual):
+                if vizinho not in rota_atual:
+                    dfs(vizinho)
+
+        rota_atual.pop()
+
+    dfs(indice_origem)
+
+    rotas_convertidas = []
+    for rota in todas_rotas:
+        rotas_convertidas.append([g.vs[i]["name"] for i in rota])
+
+    return rotas_convertidas
+
+# Rota para fazer simular conexões
+@app.route("/simular_conexoes/<int:codigo_voo>")
+def simular_conexoes(codigo_voo):
+
+    voo = next((v for v in voos if str(v["Codigo_do_voo"]) == str(codigo_voo)), None)
+    if voo is None:
+        return "Voo não encontrado", 404
+
+    origem = voo["Origem"]
+    destino = voo["Destino"]
+
+    caminhos = listar_todos_os_caminhos(origem, destino)
+
+    lista_rotas = []
+
+    for rota in caminhos:
+        qtd_paradas = len(rota) - 2
+        preco_base = voo["Preco_da_passagem"]
+
+        if qtd_paradas == 0:
+            preco_final = preco_base
+        else:
+            # Desconto progressivo: 10% por parada, até no máximo 50%
+            desconto = min(0.1 * qtd_paradas, 0.5)
+            preco_final = round(preco_base * (1 - desconto), 2)
+
+        lista_rotas.append({
+            "rota": rota,
+            "paradas": qtd_paradas,
+            "preco": preco_final
+        })
+
+    session["rotas_info"] = lista_rotas
+
+    return render_template(
+        "simular_conexoes.html",
+        origem=origem,
+        destino=destino,
+        rotas=lista_rotas,
+        voo=voo
+    )
+
+# Rota para escolher uma rota
+@app.route("/escolher_rota/<int:codigo_voo>/<int:indice_rota>")
+def escolher_rota(codigo_voo, indice_rota):
+
+    rotas = session.get("rotas_info")
+    if not rotas:
+        return "Erro: rotas não encontradas na sessão", 400
+
+    rota_escolhida = rotas[indice_rota]
+
+    session["rota"] = rota_escolhida["rota"]
+    session["preco"] = rota_escolhida["preco"]
+
+    return redirect(url_for("mapaVoo", codigo=codigo_voo))
+
+
+#-----------Rota para o mapa de assentos ----------
 @app.route("/mapa_voo/<codigo>")
 def mapaVoo(codigo):
     voo = next((v for v in voos if v["Codigo_do_voo"] == codigo), None)
@@ -61,6 +156,7 @@ def mapaVoo(codigo):
 
     return render_template("mapa_voo.html", voo=voo, assentos=assentos)
 
+#-----------Rota para confirmar Reserva(metodo de pagamento) ----------
 @app.route("/confirmarReserva/<codigo>/<assento>")
 def confirmarReserva(codigo, assento):
     voo = next((v for v in voos if v["Codigo_do_voo"] == codigo), None)
@@ -70,7 +166,7 @@ def confirmarReserva(codigo, assento):
     return render_template("confirmarReserva.html", voo=voo, assento=assento, rota=session.get("rota"),
     preco=session.get("preco"))
 
-# >>>>>>>>>>>>>>>>>> v Arvore Clientes e Passagens: Manutenção ok <<<<<<<<<<<<<<<<<<<<
+#-----------Rota para Reservar um Assento ----------
 @app.route("/reservar_assento/<codigo>/<int:assento>", methods=["POST"])
 def reservar_assento(codigo, assento):
     global valor
@@ -167,10 +263,7 @@ def reservar_assento(codigo, assento):
     return "", 204
 
 
-
-
-#-----------Rotas para Cancelar/Ve os Voos reservados ----------
-# >>>>>>>>>>>>>>>>>> v Arvore Clientes e Passagens: Manutenção ok <<<<<<<<<<<<<<<<<<<<
+#-----------Rota para acessar as reservas ----------
 @app.route("/minhas_reservas")
 def minhas_reservas():
     cpf = session.get("cpf")
@@ -214,7 +307,7 @@ def minhas_reservas():
     )
 
 
-# >>>>>>>>>>>>>>>>>> Arvore Cliente e Passagens: Manutenção ok <<<<<<<<<<<<<<<<<<<<
+#-----------Rota para cancelar uma reserva ----------
 @app.route("/cancelar_reserva/<int:codigo_passagem>")
 def cancelar_reserva(codigo_passagem):
     cpf = session.get("cpf")
@@ -287,16 +380,48 @@ def cancelar_reserva(codigo_passagem):
     return redirect(url_for("minhas_reservas"))
 
 
-
-
-#-----------Rotas para Telas iniciais do sistema ----------
+#>>>>>>>>>>>>>>>>>>>>>>Rotas para PAGINAS INICIAIS <<<<<<<<<<<<<<<<<<<
+#-----------Rota para Inicial de Adm ----------
 @app.route("/InicialAdm")   
 def editar():
     if "email" not in session:
         return redirect(url_for("login_adm"))  # bloqueia acesso direto
     return render_template("InicialAdm.html", voos_agendados = voos, email=session["email"])
 
-# >>>>>>>>>>>>>>>>>> Arvore Cliente: Manutenção v <<<<<<<<<<<<<<<<<<<<
+#-----------Rota para Inicial de Usuario ----------
+@app.route("/homeUser")
+def homeUser():
+    cpf = session.get("cpf")
+    if not cpf:
+        return redirect(url_for("login_user"))
+    
+    arvore_clientes = reconstruir_arvore_clientes()
+    cliente = retornarClientePorCPF(arvore_clientes, cpf)
+    email = session.get("email")
+    return render_template("homeUser.html", cliente=cliente, email=email)
+
+
+#>>>>>>>>>>>>>>>>>>>>>>Rotas para login e logout <<<<<<<<<<<<<<<<<<<
+#-----------Rota para Logar ADM ----------
+@app.route("/login_adm", methods = ["GET", "POST"])
+def login_adm():
+    mensagem = "" # só processa se o form for enviado 
+    if request.method == "POST":
+        email = request.form.get("email")
+        senha = request.form.get("senha")
+
+        # Verifica email e senha
+        for adm in adms:
+            if adm["email"] == email and adm["senha"] == senha:
+                session["email"] = email  # guarda na sessão 
+                return redirect(url_for("editar"))
+            
+            # Se o loop terminou e não retornou, então está errado
+        mensagem = "Email ou senha incorretos!"
+
+    return render_template("login_adm.html", mensagem=mensagem)
+
+#-----------Rota para Logar Usuario ----------
 @app.route("/login_user", methods=["GET", "POST"])
 def login_user():
     mensagem = ""  # só processa se o form for enviado
@@ -322,50 +447,20 @@ def login_user():
 
     return render_template("login_user.html", mensagem=mensagem)
 
-
-# >>>>>>>>>>>>>>>>>> Arvore Clientes: Manutenção ok <<<<<<<<<<<<<<<<<<<<
-@app.route("/homeUser")
-def homeUser():
-    cpf = session.get("cpf")
-    if not cpf:
-        return redirect(url_for("login_user"))
-    
-    arvore_clientes = reconstruir_arvore_clientes()
-    cliente = retornarClientePorCPF(arvore_clientes, cpf)
-    email = session.get("email")
-    return render_template("homeUser.html", cliente=cliente, email=email)
-
-
-@app.route("/login_adm", methods = ["GET", "POST"])
-def login_adm():
-    mensagem = "" # só processa se o form for enviado 
-    if request.method == "POST":
-        email = request.form.get("email")
-        senha = request.form.get("senha")
-
-        # Verifica email e senha
-        for adm in adms:
-            if adm["email"] == email and adm["senha"] == senha:
-                session["email"] = email  # guarda na sessão 
-                return redirect(url_for("editar"))
-            
-            # Se o loop terminou e não retornou, então está errado
-        mensagem = "Email ou senha incorretos!"
-
-    return render_template("login_adm.html", mensagem=mensagem)
-
+#-----------Rota para Deslogar ADM ----------
 @app.route("/logoutAdm")
 def logoutAdm():
     session.clear()
     return redirect(url_for("login_adm"))
 
-
+#-----------Rota para Deslogar usuario ----------
 @app.route("/logoutUser")
 def logoutUser():
     session.clear()
     return redirect(url_for("login_user"))
 
-#-----------Rotas para Funções de Adm ----------
+#>>>>>>>>>>>>>>>>>>>>>>Rotas para USER: ADM <<<<<<<<<<<<<<<<<<<
+#-----------Rota para Criar Voo ----------
 @app.route("/criar_voo", methods=["GET", "POST"])
 def criar_voo():
     mensagem = ""
@@ -409,6 +504,7 @@ def criar_voo():
 
     return render_template("criar_voo.html", mensagem=mensagem)
 
+#-----------Rota para editar Voo ----------
 @app.route("/editar_voo", methods=["GET", "POST"])
 def editar_voo():
     mensagem = ""
@@ -446,6 +542,7 @@ def editar_voo():
     
     return render_template("editar_voo.html", voos=voos, voo=voo_selecionado, mensagem=mensagem)
 
+#-----------Rota para remover Voo ----------
 @app.route("/remover_voo", methods=["GET", "POST"])
 def remover_voo():
     global voos 
@@ -471,11 +568,12 @@ def remover_voo():
 
     return render_template("remover_voo.html", voos=voos, voo=voo, mensagem=mensagem)
 
+#-----------Rota para listar Voo ----------
 @app.route("/listar_voos")
 def listar_voos():
     return render_template("listar_voos.html", voos=voos)
 
-
+#-----------Rota para gerenciar usuarios (apagar login) ----------
 @app.route("/gerenciar_usuario", methods=["GET", "POST"])
 def gerenciar_usuario():
     mensagem = ""
@@ -533,7 +631,7 @@ def gerenciar_usuario():
     
     return render_template("gerenciar_usuario.html", usuarios=usuarios, usuario=usuario_selecionado, mensagem=mensagem)
 
-# >>>>>>>>>>>>>>>>>> Arvore Clientes: Manutenção ok <<<<<<<<<<<<<<<<<<<<
+#-----------Rota para fazer pesquisa sobre clientes ----------
 @app.route("/consultar_cliente", methods=["GET", "POST"])
 def consultar_cliente():
     clientes_encontrados = []
@@ -595,9 +693,58 @@ def consultar_cliente():
         mensagem=mensagem
     )
 
+#-----------Rota para Listar Usuarios ----------
+@app.route("/listar_usuarios")
+def listar_usuarios():
+    arvore_clientes = reconstruir_arvore_clientes()
+    
+    # Listar todas as chaves (EntradaIndice) da árvore
+    entradas = arvore_clientes.listar_chaves()
+    
+    # Para exibir no template, vamos carregar os dados do arquivo na posição correta
+    lista_clientes = carregar_clientes()
+    usuarios = []
+    for e in entradas:
+        if 0 <= e.pos < len(lista_clientes):
+            usuarios.append(lista_clientes[e.pos])
+    
+    return render_template("listar_usuarios.html", usuarios=usuarios)
+
+#-----------Rota para Imprimir um relatorio ----------
+@app.route("/relatorios")
+def relatorios():
+    arvore_passagens = reconstruir_arvore()
+    
+    destinos = {}
+    voos_realizados = 0
+    reservas_totais = 0
+
+    # Cada elemento é um EntradaIndice
+    for entrada in arvore_passagens.listar_chaves():
+        codigo = entrada.chave   # <-- pegamos a chave de verdade
+
+        reserva = retornarInformacoesRegistro(arvore_passagens, codigo)
+        if not reserva:
+            continue
+
+        reservas_totais += 1
+        voo = next((v for v in voos if str(v["Codigo_do_voo"]) == reserva.codigo_voo), None)
+        if voo:
+            voos_realizados += 1
+            destino = voo["Destino"]
+            destinos[destino] = destinos.get(destino, 0) + 1
+
+    destinos_ordenados = sorted(destinos.items(), key=lambda x: x[1], reverse=True)
+
+    return render_template(
+        "relatorios.html",
+        voos_realizados=voos_realizados,
+        reservas_totais=reservas_totais,
+        destinos_ordenados=destinos_ordenados
+    )
 
 
-#-----------Rotas para Funçao Extra ----------
+#>>>>>>>>>>>>>>>>>>>>>>Rotas para Funçao Extra: Chat Bot <<<<<<<<<<<<<<<<<<<
 @app.route("/chat_bot")
 def chat_page():
     return render_template("chat_bot.html")
@@ -625,7 +772,7 @@ def chat_bot():
     return jsonify({"reply": resposta})
 
 
-#-----------Grafos----------
+#>>>>>>>>>>>>>>>>>>>>>>>>> Grafos <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 def criar_grafo_voos(voos):
     g = Graph(directed=True)
     aeroportos = set()
@@ -697,105 +844,10 @@ def buscar_conexoes(origem, destino):
 
     return [g.vs[i]["name"] for i in caminhos[0]]
 
-
 @app.route("/grafico_voos")
 def grafico_voos():
     imagem_grafo = criar_imagem_grafo(voos)
     return render_template("grafico_voos.html", imagem_grafo=imagem_grafo)
-
-
-def listar_todos_os_caminhos(origem, destino):
-    g = criar_grafo_voos(voos)
-
-    # Mapear nome → índice e índice → nome
-    nome_para_indice = {name: i for i, name in enumerate(g.vs["name"])}
-
-    if origem not in nome_para_indice or destino not in nome_para_indice:
-        return None
-
-    indice_origem = nome_para_indice[origem]
-    indice_destino = nome_para_indice[destino]
-
-    todas_rotas = []
-    rota_atual = []
-
-    def dfs(atual):
-        rota_atual.append(atual)
-
-        if atual == indice_destino:
-            todas_rotas.append(list(rota_atual))
-        else:
-            for vizinho in g.successors(atual):
-                if vizinho not in rota_atual:
-                    dfs(vizinho)
-
-        rota_atual.pop()
-
-    dfs(indice_origem)
-
-    rotas_convertidas = []
-    for rota in todas_rotas:
-        rotas_convertidas.append([g.vs[i]["name"] for i in rota])
-
-    return rotas_convertidas
-
-
-@app.route("/simular_conexoes/<int:codigo_voo>")
-def simular_conexoes(codigo_voo):
-
-    voo = next((v for v in voos if str(v["Codigo_do_voo"]) == str(codigo_voo)), None)
-    if voo is None:
-        return "Voo não encontrado", 404
-
-    origem = voo["Origem"]
-    destino = voo["Destino"]
-
-    caminhos = listar_todos_os_caminhos(origem, destino)
-
-    lista_rotas = []
-
-    for rota in caminhos:
-        qtd_paradas = len(rota) - 2
-        preco_base = voo["Preco_da_passagem"]
-
-        if qtd_paradas == 0:
-            preco_final = preco_base
-        else:
-            # Desconto progressivo: 10% por parada, até no máximo 50%
-            desconto = min(0.1 * qtd_paradas, 0.5)
-            preco_final = round(preco_base * (1 - desconto), 2)
-
-        lista_rotas.append({
-            "rota": rota,
-            "paradas": qtd_paradas,
-            "preco": preco_final
-        })
-
-    session["rotas_info"] = lista_rotas
-
-    return render_template(
-        "simular_conexoes.html",
-        origem=origem,
-        destino=destino,
-        rotas=lista_rotas,
-        voo=voo
-    )
-
-
-@app.route("/escolher_rota/<int:codigo_voo>/<int:indice_rota>")
-def escolher_rota(codigo_voo, indice_rota):
-
-    rotas = session.get("rotas_info")
-    if not rotas:
-        return "Erro: rotas não encontradas na sessão", 400
-
-    rota_escolhida = rotas[indice_rota]
-
-    session["rota"] = rota_escolhida["rota"]
-    session["preco"] = rota_escolhida["preco"]
-
-    return redirect(url_for("mapaVoo", codigo=codigo_voo))
-
 
 #-----------Mapa dos paises----------
 def criar_mapa_voos(voos, coordenadas):
@@ -832,61 +884,10 @@ def criar_mapa_voos(voos, coordenadas):
 
     mapa.save("templates/mapa_grafico_voos.html")
 
-
 @app.route("/mapa_grafico_voos")
 def mapa_grafico_voos():
     criar_mapa_voos(voos, coordenadas_aeroportos)
     return render_template("mapa_grafico_voos.html")
-
-# >>>>>>>>>>>>>>>>>> Arvore Clientes: Manutenção ok <<<<<<<<<<<<<<<<<<<<
-@app.route("/listar_usuarios")
-def listar_usuarios():
-    arvore_clientes = reconstruir_arvore_clientes()
-    
-    # Listar todas as chaves (EntradaIndice) da árvore
-    entradas = arvore_clientes.listar_chaves()
-    
-    # Para exibir no template, vamos carregar os dados do arquivo na posição correta
-    lista_clientes = carregar_clientes()
-    usuarios = []
-    for e in entradas:
-        if 0 <= e.pos < len(lista_clientes):
-            usuarios.append(lista_clientes[e.pos])
-    
-    return render_template("listar_usuarios.html", usuarios=usuarios)
-
-# >>>>>>>>>>>>>>>>>> Arvore Reservas: Manutenção Resolvida <<<<<<<<<<<<<<<<<<<<
-@app.route("/relatorios")
-def relatorios():
-    arvore_passagens = reconstruir_arvore()
-    
-    destinos = {}
-    voos_realizados = 0
-    reservas_totais = 0
-
-    # Cada elemento é um EntradaIndice
-    for entrada in arvore_passagens.listar_chaves():
-        codigo = entrada.chave   # <-- pegamos a chave de verdade
-
-        reserva = retornarInformacoesRegistro(arvore_passagens, codigo)
-        if not reserva:
-            continue
-
-        reservas_totais += 1
-        voo = next((v for v in voos if str(v["Codigo_do_voo"]) == reserva.codigo_voo), None)
-        if voo:
-            voos_realizados += 1
-            destino = voo["Destino"]
-            destinos[destino] = destinos.get(destino, 0) + 1
-
-    destinos_ordenados = sorted(destinos.items(), key=lambda x: x[1], reverse=True)
-
-    return render_template(
-        "relatorios.html",
-        voos_realizados=voos_realizados,
-        reservas_totais=reservas_totais,
-        destinos_ordenados=destinos_ordenados
-    )
 
 
 # Rodar a aplicação
